@@ -88,6 +88,7 @@ int GetBetAmount(Casino& aCasino, int gameIndex, bool& aIsPlayingHighStakes)
         {
             std::cout << "Invalid bet($" << selectedMinigame.myMinAllowedBet << "-" << selectedMinigame.myMaxAllowedBet <<
                 ")\n";    
+            ClearInput();
         }
         
         std::cin >> result;
@@ -266,6 +267,11 @@ void BroadcastWinOrLoss(Casino& aCasino, bool aIsWinner, int aWinAmount, int aLo
     
     Pause();
     ClearInput();
+    ClearConsole();
+    
+    ShowStats(aCasino);
+    
+    Pause();
     ClearConsole();
     aCasino.minigames[aCasino.game.currentMinigame].EnterGameMenu(aCasino);
 }

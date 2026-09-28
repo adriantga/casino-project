@@ -1,6 +1,5 @@
 ﻿#include "Stats.h"
 #include "Utilities.h"
-#include "Kasino.h"
 #include "Helpers.h"
 #include <iostream>
 
@@ -32,8 +31,8 @@ void SetResult(Casino& aCasino, int aMatchIndex, bool aIsWin)
         aCasino.playerStats.losses++;
     }
 
-    int resultIndex = aIsWin ? aCasino.playerStats.WIN_INDEX : aCasino.playerStats.LOSS_INDEX;
-    aCasino.playerStats.games[aMatchIndex] = aCasino.playerStats.GAME_OUTCOMES[resultIndex];
+    int resultIndex = aIsWin ? aCasino.playerStats.winIndex : aCasino.playerStats.lossIndex;
+    aCasino.playerStats.games[aMatchIndex] = aCasino.playerStats.gameOutcomes[resultIndex];
 }
 
 void ResetStats(Casino& aCasino)
@@ -57,7 +56,7 @@ void ShowStats(Casino& aCasino)
     std::cout << "================= GAME OUTCOMES ==================" << '\n';
 
 
-    for (int i = 0; i < Constants::MINIGAME_AMOUNT; i++)
+    for (int i = 0; i < Constants::minigameCount; i++)
     {
         Minigame minigame = aCasino.minigames[i];
         EMinigameType minigameType = aCasino.minigameTypes[i];
@@ -67,7 +66,7 @@ void ShowStats(Casino& aCasino)
         std::cout << minigameName << " Loss: " << minigame.myLossAmount << '\n';
 
         // The last line-breaker is unnecessary
-        if (i != Constants::MINIGAME_AMOUNT - 1) DrawBreakerLine();
+        if (i != Constants::minigameCount - 1) DrawBreakerLine();
     }
 
     std::cout << "================== GAME HISTORY ==================" << '\n';
@@ -88,8 +87,4 @@ void ShowStats(Casino& aCasino)
     }
 
     std::cout << "===================================================" << '\n';
-
-    Pause();
-    ClearConsole();
-    EnterMainMenu(aCasino);
 }

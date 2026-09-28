@@ -8,10 +8,10 @@ struct Constants;
 
 struct Constants
 {
-    static const int MINIGAME_AMOUNT = 5;
-    static const int STARTING_BALANCE = 250;
-    static const int PLAYER_NAME_MIN_SIZE = 2;
-    static const int PLAYER_NAME_MAX_SIZE = 16;
+    static const int minigameCount = 5;
+    static const int startingBalance = 250;
+    static const int playerNameMinSize = 2;
+    static const int playerNameMaxSize = 16;
 };
 
 struct Player
@@ -26,21 +26,21 @@ struct Player
 
 struct PlayerStats
 {
-    const int WIN_INDEX = 0;
-    const int LOSS_INDEX = 1;
+    const int winIndex = 0;
+    const int lossIndex = 1;
 
     int wins = 0;
     int losses = 0;
     int gamesPlayed = 0;
 
     char games[5] = {'-', '-', '-', '-', '-'};
-    const char GAME_OUTCOMES[2] = {'W', 'L'};
+    const char gameOutcomes[2] = {'W', 'L'};
 };
 
 struct Dice
 {
-    const int DICE_SUM_MIN = 2;
-    const int DICE_SUM_MAX = 12;
+    const int diceSumMin = 2;
+    const int diceSumMax = 12;
 
     int die1 = 0;
     int die2 = 0;
@@ -49,22 +49,22 @@ struct Dice
 
 struct Game
 {
-    const int ROULETTE_BETTING_TYPE_MIN = 1;
-    const int ROULETTE_BETTING_TYPE_MAX = 4;
+    const int rouletteBettingTypeMin = 1;
+    const int rouletteBettingTypeMax = 4;
 
-    const int ROULETTE_STRAIGHT_MIN = 0;
-    const int ROULETTE_STRAIGHT_MAX = 36;
+    const int rouletteStraightMin = 0;
+    const int rouletteStraightMax = 36;
 
-    const int ROULETTE_STRAIGHT = 1;
-    const int ROULETTE_RED_BLACK = 2;
-    const int ROULETTE_ODD_EVEN = 3;
-    const int ROULETTE_COLUMN_ROW = 4;
+    const int rouletteStraight = 1;
+    const int rouletteRedBlack = 2;
+    const int rouletteOddEven = 3;
+    const int rouletteColumnRow = 4;
 
-    const int ROULETTE_ROW_MIN = 1;
-    const int ROULETTE_ROW_MAX = 3;
+    const int rouletteRowMin = 1;
+    const int rouletteRowMax = 3;
 
-    const int ROULETTE_COLUMN_MIN = 0;
-    const int ROULETTE_COLUMN_MAX = 12;
+    const int rouletteColumnMin = 0;
+    const int rouletteColumnMax = 12;
 
     int currentMinigame;
 
@@ -78,8 +78,8 @@ struct Casino
     Player& player;
     PlayerStats& playerStats;
     Game& game;
-    std::array<Minigame, Constants::MINIGAME_AMOUNT>& minigames;
-    std::array<EMinigameType, Constants::MINIGAME_AMOUNT>& minigameTypes;
+    std::array<Minigame, Constants::minigameCount>& minigames;
+    std::array<EMinigameType, Constants::minigameCount>& minigameTypes;
 };
 
 enum class EOptions

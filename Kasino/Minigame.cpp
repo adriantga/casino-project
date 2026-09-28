@@ -80,6 +80,8 @@ void Minigame::Initialize(const EMinigameType& aMinigameType)
 
 void Minigame::EnterGameMenu(Casino& aCasino)
 {
+    ClearConsole();
+    
     int input;
     DrawBreakerLine();
     std::cout << "Welcome to the " << FromMinigameToChar(myMinigameType) << " table!\n";
@@ -296,7 +298,7 @@ void Minigame::OnPlay(Casino& aCasino)
 
         ForceInput(playerGuess);
 
-        while (playerGuess < aCasino.dice.DICE_SUM_MIN || playerGuess > aCasino.dice.DICE_SUM_MAX)
+        while (playerGuess < aCasino.dice.diceSumMin || playerGuess > aCasino.dice.diceSumMax)
         {
             std::cout << "Please enter a valid guess!" << '\n';
             std::cin >> playerGuess;
@@ -499,7 +501,7 @@ void Minigame::OnPlay(Casino& aCasino)
             int correctRow = 0;
             int landedCol = -1;
 
-            int landing = GetRandomNumber(aCasino.game.ROULETTE_STRAIGHT_MIN, aCasino.game.ROULETTE_STRAIGHT_MAX);
+            int landing = GetRandomNumber(aCasino.game.rouletteStraightMin, aCasino.game.rouletteStraightMax);
             winAmount = landing == 0 ? myBet * myAlternativeRewardMultiplier : myBet * myRewardMultiplier;
             std::array<int, 12> correctRowArray;
 
@@ -512,10 +514,10 @@ void Minigame::OnPlay(Casino& aCasino)
                 std::cin >> playerDecision;
             }
 
-            playerDecision = Clamp(playerDecision, aCasino.game.ROULETTE_BETTING_TYPE_MIN,
-                                   aCasino.game.ROULETTE_BETTING_TYPE_MAX);
+            playerDecision = Clamp(playerDecision, aCasino.game.rouletteBettingTypeMin,
+                                   aCasino.game.rouletteBettingTypeMax);
 
-            if (playerDecision == aCasino.game.ROULETTE_STRAIGHT)
+            if (playerDecision == aCasino.game.rouletteStraight)
             {
                 WriteLine("What's your guess? (0-36)");
 
@@ -530,12 +532,12 @@ void Minigame::OnPlay(Casino& aCasino)
                     std::cin >> playerInput;
                 }
 
-                playerInput = Clamp(playerInput, aCasino.game.ROULETTE_STRAIGHT_MIN,
-                                    aCasino.game.ROULETTE_STRAIGHT_MAX);
+                playerInput = Clamp(playerInput, aCasino.game.rouletteStraightMin,
+                                    aCasino.game.rouletteStraightMax);
 
                 isWinner = playerInput == landing;
             }
-            else if (playerDecision == aCasino.game.ROULETTE_RED_BLACK)
+            else if (playerDecision == aCasino.game.rouletteRedBlack)
             {
                 WriteLine("What's your guess? ('r' for red, 'b' for black)");
                 
@@ -574,7 +576,7 @@ void Minigame::OnPlay(Casino& aCasino)
 
                 isWinner = isCorrectPick;
             }
-            else if (playerDecision == aCasino.game.ROULETTE_ODD_EVEN)
+            else if (playerDecision == aCasino.game.rouletteOddEven)
             {
                 myFirstChoice = 'O';
                 mySecondChoice = 'E';
@@ -612,7 +614,7 @@ void Minigame::OnPlay(Casino& aCasino)
                 int correctRowIndex = GetRandomNumber(0, 3);
                 correctRowArray = BuildRow(correctRowIndex);
                 correctRow = correctRowIndex;
-                landedCol = GetRandomNumber(aCasino.game.ROULETTE_ROW_MIN, aCasino.game.ROULETTE_ROW_MAX);
+                landedCol = GetRandomNumber(aCasino.game.rouletteRowMin, aCasino.game.rouletteRowMax);
 
                 WriteLine("Which row are you picking? (0-3)");
 
@@ -626,7 +628,7 @@ void Minigame::OnPlay(Casino& aCasino)
                     std::cin >> playerRowPick;
                 }
 
-                playerRowPick = Clamp(playerRowPick, 0, aCasino.game.ROULETTE_ROW_MAX);
+                playerRowPick = Clamp(playerRowPick, 0, aCasino.game.rouletteRowMax);
 
                 winAmount = correctRow == 0
                                 ? myBet * myAlternativeRewardMultiplier
@@ -634,9 +636,9 @@ void Minigame::OnPlay(Casino& aCasino)
                 isWinner = playerRowPick == correctRowIndex;
             }
 
-            bool hasNumbers = playerDecision == aCasino.game.ROULETTE_STRAIGHT || playerDecision == aCasino.game.
-                ROULETTE_ODD_EVEN;
-            bool hasRow = playerDecision == aCasino.game.ROULETTE_COLUMN_ROW;
+            bool hasNumbers = playerDecision == aCasino.game.rouletteStraight || playerDecision == aCasino.game.
+                rouletteOddEven;
+            bool hasRow = playerDecision == aCasino.game.rouletteColumnRow;
 
             if (hasRow)
             {

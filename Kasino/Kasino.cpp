@@ -31,12 +31,12 @@ int main()
 
     bool playerHasEnteredName = false;
     const char* playerName = "N/A";
-    Player player = {Constants::STARTING_BALANCE, playerName, playerHasEnteredName};
+    Player player = {Constants::startingBalance, playerName, playerHasEnteredName};
 
     PlayerStats playerStats;
     Game game;
 
-    std::array<EMinigameType, Constants::MINIGAME_AMOUNT> minigameTypes = {
+    std::array<EMinigameType, Constants::minigameCount> minigameTypes = {
         EMinigameType::GuessTheDiceSum, EMinigameType::OddOrEven, EMinigameType::YesOrNo, EMinigameType::HigherOrLower,
         EMinigameType::Roulette
     };
@@ -76,7 +76,7 @@ void RefuseGame(bool& aCantPlay, Casino& casino)
 
 void ResetBalance(Casino& aCasino)
 {
-    aCasino.player.money = Constants::STARTING_BALANCE;
+    aCasino.player.money = Constants::startingBalance;
 }
 
 void BroadcastPlayerBalance(bool aStylize, Casino& aCasino)
@@ -95,7 +95,7 @@ void BroadcastPlayerBalance(bool aStylize, Casino& aCasino)
 bool IsValidName(char* aS)
 {
     // Time to fix this baloney
-    return strlen(aS) >= Constants::PLAYER_NAME_MIN_SIZE && strlen(aS) <= Constants::PLAYER_NAME_MAX_SIZE && strspn(
+    return strlen(aS) >= Constants::playerNameMinSize && strlen(aS) <= Constants::playerNameMaxSize && strspn(
         aS, "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz\x8F\x86\x84\x8E\x94\x99") == strlen(aS);
 }
 
@@ -384,6 +384,8 @@ void SwitchTo(EOptions aOption, Casino& aCasino)
         break;
     case EOptions::Stats:
         ShowStats(aCasino);
+        Pause();
+        EnterMainMenu(aCasino);
         break;
     case EOptions::About:
         About(aCasino);

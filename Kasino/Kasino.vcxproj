@@ -155,19 +155,31 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="GuessTheDiceSum.cpp" />
+    <ClCompile Include="HigherOrLower.cpp" />
     <ClCompile Include="Kasino.cpp" />
+    <ClCompile Include="MenuController.cpp" />
     <ClCompile Include="Minigame.cpp" />
+    <ClCompile Include="OddOrEven.cpp" />
+    <ClCompile Include="Roulette.cpp" />
     <ClCompile Include="StateController.cpp" />
     <ClCompile Include="Stats.cpp" />
     <ClCompile Include="Utilities.cpp" />
+    <ClCompile Include="YesOrNo.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="GuessTheDiceSum.h" />
     <ClInclude Include="Helpers.h" />
+    <ClInclude Include="HigherOrLower.h" />
     <ClInclude Include="Kasino.h" />
+    <ClInclude Include="MenuController.h" />
     <ClInclude Include="Minigame.h" />
+    <ClInclude Include="OddOrEven.h" />
+    <ClInclude Include="Roulette.h" />
     <ClInclude Include="StateController.h" />
     <ClInclude Include="Stats.h" />
     <ClInclude Include="Utilities.h" />
+    <ClInclude Include="YesOrNo.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
