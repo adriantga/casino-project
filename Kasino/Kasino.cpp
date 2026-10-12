@@ -4,7 +4,7 @@
 #include "Utilities.h"
 #include "Kasino.h"
 
-#include "Minigame.h"
+#include "INeedToRemoveThisLater.h"
 #include "StateController.h"
 #include "Stats.h"
 
@@ -43,9 +43,9 @@ int main()
     
     InitializeStakeBets(player, player.standardBets, player.stakeBets);
     
-    std::array<Minigame, minigameTypes.size()> minigames = {
-        Minigame{player, player.stakeBets, true}, Minigame{player, player.standardBets, false}, Minigame{player, player.stakeBets, true},
-        Minigame{player, player.standardBets, false}, Minigame{player, player.standardBets, false}
+    std::array<INeedToRemoveThisLater, minigameTypes.size()> minigames = {
+        INeedToRemoveThisLater{player, player.stakeBets, true}, INeedToRemoveThisLater{player, player.standardBets, false}, INeedToRemoveThisLater{player, player.stakeBets, true},
+        INeedToRemoveThisLater{player, player.standardBets, false}, INeedToRemoveThisLater{player, player.standardBets, false}
     };
     for (int i = 0; i < minigames.size(); i++)
     {
@@ -102,7 +102,7 @@ bool IsValidName(char* aS)
 // Resets all stats after the player has lost the entire game.
 void ResetGame(Casino& aCasino)
 {
-    for (Minigame& minigame : aCasino.minigames)
+    for (INeedToRemoveThisLater& minigame : aCasino.minigames)
     {
         minigame.Reset();
     }
@@ -240,7 +240,7 @@ void About(Casino& aCasino)
 void CashOut(Casino& aCasino)
 {
     int cantPlayAmount = 0;
-    for (Minigame minigame : aCasino.minigames)
+    for (INeedToRemoveThisLater minigame : aCasino.minigames)
     {
         if (minigame.myCantPlay)
         {

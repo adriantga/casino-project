@@ -1,16 +1,16 @@
-﻿#include "Minigame.h"
+﻿#include "INeedToRemoveThisLater.h"
 #include "Utilities.h"
 #include <iostream>
 #include "StateController.h"
 
-Minigame::Minigame(Player& aPlayer, std::array<int, 3>& aAllowedBets, bool aHasStakes)
+INeedToRemoveThisLater::INeedToRemoveThisLater(Player& aPlayer, std::array<int, 3>& aAllowedBets, bool aHasStakes)
 {
     this->myAllowedBets = aAllowedBets;
     this->myHasStakes = aHasStakes;
     UpdateBets(aPlayer);
 }
 
-void Minigame::UpdateBets(Player& aPlayer)
+void INeedToRemoveThisLater::UpdateBets(Player& aPlayer)
 {
     if (!myHasStakes)
     {
@@ -33,7 +33,7 @@ void Minigame::UpdateBets(Player& aPlayer)
     }
 }
 
-void Minigame::Initialize(const EMinigameType& aMinigameType)
+void INeedToRemoveThisLater::Initialize(const EMinigameType& aMinigameType)
 {
     myMinigameType = aMinigameType;
 
@@ -46,9 +46,7 @@ void Minigame::Initialize(const EMinigameType& aMinigameType)
         myHasStakes = true;
         break;
     case EMinigameType::OddOrEven:
-        myRewardMultiplier = 4;
-        myWinLimit = 1500;
-        myGameIndex = MINIGAME_ODD_OR_EVEN;
+        
         break;
     case EMinigameType::YesOrNo:
         myBaseReward = 25;
@@ -78,7 +76,7 @@ void Minigame::Initialize(const EMinigameType& aMinigameType)
     }
 }
 
-void Minigame::EnterGameMenu(Casino& aCasino)
+void INeedToRemoveThisLater::EnterGameMenu(Casino& aCasino)
 {
     ClearConsole();
     
@@ -114,7 +112,7 @@ void Minigame::EnterGameMenu(Casino& aCasino)
     }
 }
 
-void Minigame::PlayGame(Casino& aCasino)
+void INeedToRemoveThisLater::PlayGame(Casino& aCasino)
 {
     if (HasExceeded(myWinAmount, myWinLimit))
     {
@@ -228,14 +226,14 @@ void Minigame::PlayGame(Casino& aCasino)
     OnPlay(aCasino);
 }
 
-void Minigame::Reset()
+void INeedToRemoveThisLater::Reset()
 {
     myWinAmount = 0;
     myLossAmount = 0;
     myCantPlay = false;
 }
 
-void Minigame::ShowRules(Casino& aCasino)
+void INeedToRemoveThisLater::ShowRules(Casino& aCasino)
 {
     DrawMenuLine();
     std::cout << FromMinigameToChar(myMinigameType) << " RULES\n";
@@ -286,7 +284,7 @@ void Minigame::ShowRules(Casino& aCasino)
     EnterGameMenu(aCasino);
 }
 
-void Minigame::OnPlay(Casino& aCasino)
+void INeedToRemoveThisLater::OnPlay(Casino& aCasino)
 {
     bool isWinner = false;
     int winAmount = 0;

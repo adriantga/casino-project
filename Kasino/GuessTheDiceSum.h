@@ -3,25 +3,26 @@
 
 class GuessTheDiceSum
 {
-    bool myIsPlayingHighStakes = false;
+    MinigameSettings mySettings;
+    BettingSettings myBettingSettings = {};
+    Minigame myBase = {};
+    
+    int GetRewardMultiplier() const { return mySettings.rewardMultiplier; }
+    int GetWinLimit() const { return mySettings.winLimit; }
     
     void PlayTable(Casino& aCasino);
     void ShowRules(Casino& aCasino);
     void OnPlay(Casino& aCasino);
     
 public:
-    int myWinAmount = 0;
-    int myLossAmount = 0;
-    int myWinLimit = 0;
-
     int myBet = 0;
     
-    GuessTheDiceSum(Player& aPlayer, std::array<int, 3>& aAllowedBets, bool aHasStakes);
+    GuessTheDiceSum(const Player& aPlayer, const std::array<int, 3>& aAllowedBets);
     
-    bool IsPlayingHighStakes() const { return myIsPlayingHighStakes; }
-    void Initialize(const EMinigameType& aMinigameType);
+    bool IsPlayingHighStakes() const { return mySettings.isPlayingHighStakes; }
+    void Initialize();
     void EnterGameMenu(Casino& aCasino);
-    void UpdateBets(Player& aPlayer);
+    void UpdateBets(const Player& aPlayer);
 
     void Reset();
 };

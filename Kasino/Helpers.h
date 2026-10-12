@@ -2,9 +2,16 @@
 #include <array>
 #include <string>
 
+#include "GuessTheDiceSum.h"
+#include "HigherOrLower.h"
+#include "OddOrEven.h"
+#include "Roulette.h"
+#include "YesOrNo.h"
+
 enum class EMinigameType;
-class Minigame;
+class INeedToRemoveThisLater;
 struct Constants;
+struct Minigames;
 
 struct Constants
 {
@@ -72,14 +79,101 @@ struct Game
     bool isQuitting = false;
 };
 
+struct Minigames
+{
+    static constexpr int MINIGAME_GUESS_THE_DICE_SUM{0};
+    static constexpr int MINIGAME_ODD_OR_EVEN = {1};
+    static constexpr int MINIGAME_YES_OR_NO = {2};
+    static constexpr int MINIGAME_HIGHER_OR_LOWER = {3};
+    static constexpr int MINIGAME_ROULETTE = {4};
+
+    static constexpr int LOW_NO_STAKES_MIN = {0};
+    static constexpr int LOW_NO_STAKES_MAX = {1};
+    static constexpr int HIGH_STAKES_MIN = {2};
+};
+
+struct MinigameSettings
+{
+    int rewardMultiplier = 1;
+    int winImpressAmount = 500;
+    int lossTauntAmount = 500;
+    int rewardIncreaseThreshold = 0;
+
+    int cachedReward = 0;
+    bool useCachedReward = false;
+
+    // Used by 'Roulette' and 'Yes or No'
+    int rangeStart = 0;
+    int rangeEnd = 0;
+
+    char firstChoice = ' ';
+    char secondChoice = ' ';
+    char quitChoice = 'Q';
+
+    // Only used by 'Roulette' at the moment
+    int alternativeRewardMultiplier = 1;
+    int baseReward = 0;
+
+    bool shouldPlayerQuit = false;
+    bool isPlayerQuitting = false;
+    bool isForcedVictory = false;
+    bool isForcedWinAmount = true;
+
+    bool hasPlayerPickedFirst = false;
+    bool hasPlayerPickedSecond = false;
+    
+    bool isPlayingHighStakes = false;
+
+    EMinigameType minigameType;
+    int winLimit = 0;
+};
+
+struct BettingSettings
+{
+    std::array<int, 3> allowedBets = {0, 0};
+    int minAllowedBet = 0;
+    int maxAllowedBet = 0;
+};
+
+struct Minigame
+{
+    int winAmount = 0;
+    int lossAmount = 0;
+    bool cantPlay = false;
+};
+
 struct Casino
 {
     Dice& dice;
     Player& player;
     PlayerStats& playerStats;
     Game& game;
-    std::array<Minigame, Constants::minigameCount>& minigames;
+    std::array<INeedToRemoveThisLater, Constants::minigameCount>& minigames;
     std::array<EMinigameType, Constants::minigameCount>& minigameTypes;
+    // Uncomment this later
+    GuessTheDiceSum guessTheDiceSumTable;
+    OddOrEven oddOrEvenTable;
+    YesOrNo yesOrNoTable;
+    HigherOrLower higherOrLowerTable;
+    Roulette rouletteTable;
+    
+    void Initialize()
+    {
+        guessTheDiceSumTable.Initialize();
+        oddOrEvenTable.Initialize();
+        yesOrNoTable.Initialize();
+        higherOrLowerTable.Initialize();
+        rouletteTable.Initialize();
+    }
+    
+    void Reset()
+    {
+        guessTheDiceSumTable.Reset();
+        oddOrEvenTable.Reset();
+        yesOrNoTable.Reset();
+        higherOrLowerTable.Reset();
+        rouletteTable.Reset();
+    }
 };
 
 enum class EOptions

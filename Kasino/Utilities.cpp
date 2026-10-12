@@ -2,7 +2,7 @@
 #include "Helpers.h"
 #include <random>
 #include "Utilities.h"
-#include "Minigame.h"
+#include "INeedToRemoveThisLater.h"
 
 #include "Kasino.h"
 #include "StateController.h"
@@ -48,7 +48,7 @@ void DrawTitle(const char aTitleText[])
 
 int GetBetAmount(Casino& aCasino, int gameIndex, bool& aIsPlayingHighStakes)
 {
-    Minigame& selectedMinigame = aCasino.minigames[gameIndex];
+    INeedToRemoveThisLater& selectedMinigame = aCasino.minigames[gameIndex];
     
     int playerMoney = aCasino.player.money;
     bool canPlay = !HasSubceeded(playerMoney, selectedMinigame.myMinAllowedBet);

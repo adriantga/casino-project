@@ -3,7 +3,7 @@
 #include "Helpers.h"
 #include <iostream>
 
-#include "Minigame.h"
+#include "INeedToRemoveThisLater.h"
 
 void AddPlayedGame(Casino& aCasino, bool aIsWinner)
 {
@@ -58,7 +58,7 @@ void ShowStats(Casino& aCasino)
 
     for (int i = 0; i < Constants::minigameCount; i++)
     {
-        Minigame minigame = aCasino.minigames[i];
+        INeedToRemoveThisLater minigame = aCasino.minigames[i];
         EMinigameType minigameType = aCasino.minigameTypes[i];
         const char* minigameName = FromMinigameToChar(minigameType);
 
