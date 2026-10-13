@@ -4,6 +4,7 @@
 
 #include "Helpers.h"
 #include "Utilities.h"
+#include "MenuController.h"
 
 GuessTheDiceSum::GuessTheDiceSum(const Player& aPlayer, const std::array<int, 3>& aAllowedBets)
 {
@@ -19,6 +20,12 @@ void GuessTheDiceSum::Initialize()
 
 void GuessTheDiceSum::UpdateBets(const Player& aPlayer)
 {
+    if (myBettingSettings.allowedBets[Minigames::LOW_NO_STAKES_MIN] == 0 &&
+        myBettingSettings.allowedBets[Minigames::LOW_NO_STAKES_MAX] == 0)
+    {
+        myBettingSettings.allowedBets = aPlayer.stakeBets;
+    }
+
     if (mySettings.isPlayingHighStakes)
     {
         myBettingSettings.minAllowedBet = myBettingSettings.allowedBets[Minigames::HIGH_STAKES_MIN];
@@ -42,7 +49,7 @@ void GuessTheDiceSum::EnterGameMenu(Casino& aCasino)
 {
     ClearConsole();
     
-    int input;
+    int aInput;
     DrawBreakerLine();
     WriteLine("Welcome to Guess The Dice Sum!");
     DrawBreakerLine();
@@ -52,25 +59,25 @@ void GuessTheDiceSum::EnterGameMenu(Casino& aCasino)
     BroadcastPlayerBalance(false, aCasino);
     DrawBreakerLine();
     
-    ForceInput(input);
+    ForceInput(aInput);
     ClearConsole();
 
-    constexpr int PLAY_GAME = 1;
-    constexpr int SHOW_INSTRUCTIONS = 2;
-    constexpr int LEAVE_TABLE = 3;
+    constexpr int aPlayGame = 1;
+    constexpr int aShowInstructions = 2;
+    constexpr int aLeaveTable = 3;
     
-    input = Max(input, LEAVE_TABLE);
+    aInput = Max(aInput, aLeaveTable);
 
-    switch (input)
+    switch (aInput)
     {
-    case PLAY_GAME:
+    case aPlayGame:
         PlayTable(aCasino);
         break;
-    case SHOW_INSTRUCTIONS:
+    case aShowInstructions:
         ShowRules(aCasino);
         break;
-    case LEAVE_TABLE:
-        EnterGamePicker(aCasino);
+    case aLeaveTable:
+        Menu::EnterGamePicker(aCasino);
         break;
     }
 }
@@ -101,11 +108,11 @@ void GuessTheDiceSum::PlayTable(Casino& aCasino)
     mySettings.firstChoice = 'H';
     mySettings.secondChoice = 'L';
 
-    char playerHighLowInput;
-    std::cin >> playerHighLowInput;
+    char aPlayerHighLowInput;
+    std::cin >> aPlayerHighLowInput;
 
-    mySettings.hasPlayerPickedFirst = IsCharacter(playerHighLowInput, mySettings.firstChoice);
-    mySettings.hasPlayerPickedSecond = IsCharacter(playerHighLowInput, mySettings.secondChoice);
+    mySettings.hasPlayerPickedFirst = IsCharacter(aPlayerHighLowInput, mySettings.firstChoice);
+    mySettings.hasPlayerPickedSecond = IsCharacter(aPlayerHighLowInput, mySettings.secondChoice);
 
     myBettingSettings.maxAllowedBet = aCasino.player.money;
         
@@ -117,13 +124,13 @@ void GuessTheDiceSum::PlayTable(Casino& aCasino)
         while (std::cin.fail())
         {
             ClearInput();
-            std::cin >> playerHighLowInput;
+            std::cin >> aPlayerHighLowInput;
         }
 
-        std::cin >> playerHighLowInput;
+        std::cin >> aPlayerHighLowInput;
 
-        mySettings.hasPlayerPickedFirst = IsCharacter(playerHighLowInput, mySettings.firstChoice);
-        mySettings.hasPlayerPickedSecond = IsCharacter(playerHighLowInput, mySettings.secondChoice);
+        mySettings.hasPlayerPickedFirst = IsCharacter(aPlayerHighLowInput, mySettings.firstChoice);
+        mySettings.hasPlayerPickedSecond = IsCharacter(aPlayerHighLowInput, mySettings.secondChoice);
         mySettings.isPlayingHighStakes = mySettings.hasPlayerPickedFirst;
     }
 
@@ -157,25 +164,25 @@ void GuessTheDiceSum::PlayTable(Casino& aCasino)
 
 void GuessTheDiceSum::OnPlay(Casino& aCasino)
 {
-    int playerGuess;
+    int aPlayerGuess;
 
-    ForceInput(playerGuess);
+    ForceInput(aPlayerGuess);
 
-    while (playerGuess < aCasino.dice.diceSumMin || playerGuess > aCasino.dice.diceSumMax)
+    while (aPlayerGuess < aCasino.dice.diceSumMin || aPlayerGuess > aCasino.dice.diceSumMax)
     {
         std::cout << "Please enter a valid guess!" << '\n';
-        std::cin >> playerGuess;
+        std::cin >> aPlayerGuess;
     }
 
     BroadcastDiceResult(aCasino, true);
-    bool isWinner = playerGuess == aCasino.dice.diceSum;
-    int winAmount = 0;
+    bool aIsWinner = aPlayerGuess == aCasino.dice.diceSum;
+    int aWinAmount = 0;
     
-    if (playerGuess == aCasino.dice.diceSum)
+    if (aPlayerGuess == aCasino.dice.diceSum)
     {
-        winAmount = myBet * mySettings.rewardMultiplier;
+        aWinAmount = myBet * mySettings.rewardMultiplier;
     }
     
-    BroadcastWinOrLoss(aCasino, isWinner, winAmount, myBet,
-                       isWinner ? myBase.winAmount : myBase.lossAmount);
+    BroadcastWinOrLoss(aCasino, aIsWinner, aWinAmount, myBet,
+                       aIsWinner ? myBase.winAmount : myBase.lossAmount);
 }

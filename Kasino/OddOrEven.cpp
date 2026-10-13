@@ -3,6 +3,7 @@
 #include <iostream>
 
 #include "Utilities.h"
+#include "MenuController.h"
 
 void OddOrEven::Initialize()
 {
@@ -13,7 +14,7 @@ void OddOrEven::Initialize()
 void OddOrEven::Reset()
 {
 	myBase.winAmount = 0;
-	myBase.winAmount = 0;
+	myBase.lossAmount = 0;
 	myBase.cantPlay = false;
 }
 
@@ -31,7 +32,7 @@ void OddOrEven::EnterGameMenu(Casino& aCasino)
 {
     ClearConsole();
     
-    int input;
+    int aInput;
     DrawBreakerLine();
     WriteLine("Welcome to Even or Odd!");
     DrawBreakerLine();
@@ -41,25 +42,25 @@ void OddOrEven::EnterGameMenu(Casino& aCasino)
     BroadcastPlayerBalance(false, aCasino);
     DrawBreakerLine();
     
-    ForceInput(input);
+    ForceInput(aInput);
     ClearConsole();
 
-    constexpr int PLAY_GAME = 1;
-    constexpr int SHOW_INSTRUCTIONS = 2;
-    constexpr int LEAVE_TABLE = 3;
+    constexpr int aPlayGame = 1;
+    constexpr int aShowInstructions = 2;
+    constexpr int aLeaveTable = 3;
     
-    input = Max(input, LEAVE_TABLE);
+    aInput = Max(aInput, aLeaveTable);
 
-    switch (input)
+    switch (aInput)
     {
-    case PLAY_GAME:
+    case aPlayGame:
         PlayTable(aCasino);
         break;
-    case SHOW_INSTRUCTIONS:
+    case aShowInstructions:
         ShowRules(aCasino);
         break;
-    case LEAVE_TABLE:
-        EnterGamePicker(aCasino);
+    case aLeaveTable:
+        Menu::EnterGamePicker(aCasino);
         break;
     }
 }
@@ -72,8 +73,8 @@ void OddOrEven::PlayTable(Casino& aCasino)
         return;
     }
 	
-	bool isPlayingHighStakes = false;
-	myBet = GetBetAmount(aCasino, Minigames::MINIGAME_ODD_OR_EVEN, isPlayingHighStakes);
+	bool aIsPlayingHighStakes = false;
+	myBet = GetBetAmount(aCasino, Minigames::MINIGAME_ODD_OR_EVEN, aIsPlayingHighStakes);
 	
 	TauntOrImpress(aCasino, myBase.winAmount, myBase.lossAmount, mySettings.winImpressAmount,
                    mySettings.lossTauntAmount);
@@ -83,8 +84,8 @@ void OddOrEven::PlayTable(Casino& aCasino)
 
 void OddOrEven::OnPlay(Casino& aCasino)
 {
-	char even = 'E';
-	char odd = 'O';
+	char aEven = 'E';
+	char aOdd = 'O';
 	
 	RollDice(aCasino);
 	
@@ -93,32 +94,32 @@ void OddOrEven::OnPlay(Casino& aCasino)
 	
 	WriteLine("Take your pick! Type 'e' for even and 'o' for odd!");
 	
-	char playerPick;
-	std::cin >> playerPick;
+	char aPlayerPick;
+	std::cin >> aPlayerPick;
 	
-	bool playerPickedEven = IsCharacter(playerPick, even);
-	bool playerPickedOdd = IsCharacter(playerPick, odd);
+	bool aPlayerPickedEven = IsCharacter(aPlayerPick, aEven);
+	bool aPlayerPickedOdd = IsCharacter(aPlayerPick, aOdd);
 
-	const bool isEven = IsEven(aCasino.dice.die1) && IsEven(aCasino.dice.die2);
-	const bool isOdd = !IsEven(aCasino.dice.die1) && !IsEven(aCasino.dice.die2);
+	const bool aIsEven = IsEven(aCasino.dice.die1) && IsEven(aCasino.dice.die2);
+	const bool aIsOdd = !IsEven(aCasino.dice.die1) && !IsEven(aCasino.dice.die2);
 
-	while(!playerPickedEven && !playerPickedOdd)
+	while (!aPlayerPickedEven && !aPlayerPickedOdd)
 	{
-		while(std::cin.fail())
+		while (std::cin.fail())
 		{
 			ClearInput();
-			std::cin >> playerPick;
+			std::cin >> aPlayerPick;
 		}
 		
-		std::cin >> playerPick;
+		std::cin >> aPlayerPick;
 		
-		playerPickedEven = IsCharacter(playerPick, even);
-		playerPickedOdd = IsCharacter(playerPick, odd);
+		aPlayerPickedEven = IsCharacter(aPlayerPick, aEven);
+		aPlayerPickedOdd = IsCharacter(aPlayerPick, aOdd);
 	}
 	
-	bool isWinner = (playerPickedEven && isEven) || (playerPickedOdd && isOdd);
+	bool aIsWinner = (aPlayerPickedEven && aIsEven) || (aPlayerPickedOdd && aIsOdd);
 	BroadcastDiceResult(aCasino, false);
 	
-	int winAmount = myBet * mySettings.rewardMultiplier;
-	BroadcastWinOrLoss(aCasino, isWinner, winAmount, myBet, isWinner ? myBase.winAmount : myBase.lossAmount);
+	int aWinAmount = myBet * mySettings.rewardMultiplier;
+	BroadcastWinOrLoss(aCasino, aIsWinner, aWinAmount, myBet, aIsWinner ? myBase.winAmount : myBase.lossAmount);
 }

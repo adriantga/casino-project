@@ -1,9 +1,9 @@
-﻿#pragma once
+#pragma once
 #include "Helpers.h"
 
 class HigherOrLower
 {
-	MinigameSettings mySettings;
+    MinigameSettings mySettings;
     BettingSettings myBettingSettings = {};
     Minigame myBase = {};
     
@@ -13,11 +13,11 @@ class HigherOrLower
     void PlayTable(Casino& aCasino);
     void ShowRules(Casino& aCasino);
     void OnPlay(Casino& aCasino);
-	void ForceRange();
-	
-public:
-	int myBet = 0;
     
+public:
+    int myBet = 0;
+    
+    HigherOrLower() = default;
     HigherOrLower(const Player& aPlayer, const std::array<int, 3>& aAllowedBets);
     
     bool IsPlayingHighStakes() const { return mySettings.isPlayingHighStakes; }
@@ -26,4 +26,10 @@ public:
     void UpdateBets(const Player& aPlayer);
 
     void Reset();
+
+    int GetMinAllowedBet() const { return myBettingSettings.minAllowedBet; }
+    int GetMaxAllowedBet() const { return myBettingSettings.maxAllowedBet; }
+    bool CantPlay() const { return myBase.cantPlay; }
+    int GetWinAmount() const { return myBase.winAmount; }
+    int GetLossAmount() const { return myBase.lossAmount; }
 };

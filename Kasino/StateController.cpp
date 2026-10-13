@@ -1,24 +1,24 @@
-﻿#include "Helpers.h"
+#include "Helpers.h"
 #include "Kasino.h"
 #include "StateController.h"
 
 #include <iostream>
 
-#include "INeedToRemoveThisLater.h"
 #include "Utilities.h"
+#include "MenuController.h"
 
 void Pick(int aChoice, bool aIsInGame, Casino& aCasino)
 {
     ClearConsole();
     if (aIsInGame)
     {
-        int minigamesCount = int(aCasino.minigames.size());
+        int aMinigamesCount = Constants::minigameCount;
 
-        aChoice = Clamp(aChoice, 1, minigamesCount + 2);
+        aChoice = Clamp(aChoice, 1, aMinigamesCount + 2);
 
-        if (aChoice > aCasino.minigames.size())
+        if (aChoice > aMinigamesCount)
         {
-            if (aChoice == aCasino.minigames.size() + 1)
+            if (aChoice == aMinigamesCount + 1)
             {
                 SwitchTo(EOptions::CashOut, aCasino);
             }
@@ -30,7 +30,7 @@ void Pick(int aChoice, bool aIsInGame, Casino& aCasino)
         else
         {
             aCasino.game.currentMinigame = aChoice - 1;
-            aCasino.minigames[aCasino.game.currentMinigame].EnterGameMenu(aCasino);
+            aCasino.EnterGameMenu(aCasino.game.currentMinigame);
         }
 
         return;
@@ -45,7 +45,7 @@ void Pick(int aChoice, bool aIsInGame, Casino& aCasino)
         }
         else
         {
-            EnterNamePicker(aCasino);
+            Menu::EnterNamePicker(aCasino);
         }
         break;
     case 2:
@@ -65,10 +65,10 @@ void ChangeState(EStates aTargetState, Casino& aCasino)
     switch (aTargetState)
     {
     case EStates::Game:
-        EnterGamePicker(aCasino);
+        Menu::EnterGamePicker(aCasino);
         break;
     case EStates::MainMenu:
-        EnterMainMenu(aCasino);
+        Menu::EnterMainMenu(aCasino);
         break;
     }
 }

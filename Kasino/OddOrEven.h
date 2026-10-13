@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 #include "Helpers.h"
 
 class OddOrEven
@@ -18,4 +18,8 @@ public:
     void Initialize();
     void Reset();
     void EnterGameMenu(Casino& aCasino);
+
+    bool CantPlay() const { return myBase.cantPlay; }
+    int GetWinAmount() const { return myBase.winAmount; }
+    int GetLossAmount() const { return myBase.lossAmount; }
 };

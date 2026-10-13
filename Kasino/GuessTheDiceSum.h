@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 #include "Helpers.h"
 
 class GuessTheDiceSum
@@ -17,6 +17,7 @@ class GuessTheDiceSum
 public:
     int myBet = 0;
     
+    GuessTheDiceSum() = default;
     GuessTheDiceSum(const Player& aPlayer, const std::array<int, 3>& aAllowedBets);
     
     bool IsPlayingHighStakes() const { return mySettings.isPlayingHighStakes; }
@@ -25,4 +26,10 @@ public:
     void UpdateBets(const Player& aPlayer);
 
     void Reset();
+
+    int GetMinAllowedBet() const { return myBettingSettings.minAllowedBet; }
+    int GetMaxAllowedBet() const { return myBettingSettings.maxAllowedBet; }
+    bool CantPlay() const { return myBase.cantPlay; }
+    int GetWinAmount() const { return myBase.winAmount; }
+    int GetLossAmount() const { return myBase.lossAmount; }
 };

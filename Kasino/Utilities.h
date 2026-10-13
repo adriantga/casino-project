@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #include <array>
 
@@ -27,10 +27,11 @@ void WriteLine(const char aTextToType[], bool aNewLine = true);
 void DrawMenu(Casino& aCasino, int& aInput, const char aTitleText[], const char aOptions[], int aNumOptions = 3,
               const char aExtraOptions[] = "", bool aShowBalance = false);
 void DrawTitle(const char aTitleText[]);
-int GetBetAmount(Casino& aCasino, int gameIndex, bool& aIsPlayingHighStakes);
+void GetBetLimits(Casino& aCasino, int aGameIndex, int& aMinBet, int& aMaxBet, bool& aHasStakes);
+int GetBetAmount(Casino& aCasino, int aGameIndex, bool& aIsPlayingHighStakes);
 void BroadcastDiceResult(Casino& aCasino, bool aShowSum = false);
 void BroadcastWinOrLoss(Casino& aCasino, bool aIsWinner, int aWinAmount, int aLoseAmount,
                         int& aMinigame);
-bool IsMatching(int current[], int target[]);
+bool IsMatching(int aCurrent[], int aTarget[]);
 char ToLower(char aCharacter);
 std::array<int, 12> BuildRow(int aRowStart);

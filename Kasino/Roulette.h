@@ -1,9 +1,9 @@
-﻿#pragma once
+#pragma once
 #include "Helpers.h"
 
 class Roulette
 {
-	MinigameSettings mySettings;
+    MinigameSettings mySettings;
     Minigame myBase = {};
     
     int GetRewardMultiplier() const { return mySettings.rewardMultiplier; }
@@ -18,4 +18,8 @@ public:
     void Initialize();
     void Reset();
     void EnterGameMenu(Casino& aCasino);
+
+    bool CantPlay() const { return myBase.cantPlay; }
+    int GetWinAmount() const { return myBase.winAmount; }
+    int GetLossAmount() const { return myBase.lossAmount; }
 };

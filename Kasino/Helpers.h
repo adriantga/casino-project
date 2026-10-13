@@ -1,17 +1,6 @@
-﻿#pragma once
+#pragma once
 #include <array>
 #include <string>
-
-#include "GuessTheDiceSum.h"
-#include "HigherOrLower.h"
-#include "OddOrEven.h"
-#include "Roulette.h"
-#include "YesOrNo.h"
-
-enum class EMinigameType;
-class INeedToRemoveThisLater;
-struct Constants;
-struct Minigames;
 
 struct Constants
 {
@@ -92,6 +81,35 @@ struct Minigames
     static constexpr int HIGH_STAKES_MIN = {2};
 };
 
+enum class EOptions
+{
+    CashOut,
+    Stats,
+    About,
+    Quit
+};
+
+enum class EMinigameType
+{
+    GuessTheDiceSum = 1,
+    OddOrEven = 2,
+    YesOrNo = 3,
+    HigherOrLower = 4,
+    Roulette = 5
+};
+
+enum class EStates
+{
+    MainMenu,
+    Game
+};
+
+enum class EStakeType
+{
+    High,
+    Low
+};
+
 struct MinigameSettings
 {
     int rewardMultiplier = 1;
@@ -142,65 +160,4 @@ struct Minigame
     bool cantPlay = false;
 };
 
-struct Casino
-{
-    Dice& dice;
-    Player& player;
-    PlayerStats& playerStats;
-    Game& game;
-    std::array<INeedToRemoveThisLater, Constants::minigameCount>& minigames;
-    std::array<EMinigameType, Constants::minigameCount>& minigameTypes;
-    // Uncomment this later
-    GuessTheDiceSum guessTheDiceSumTable;
-    OddOrEven oddOrEvenTable;
-    YesOrNo yesOrNoTable;
-    HigherOrLower higherOrLowerTable;
-    Roulette rouletteTable;
-    
-    void Initialize()
-    {
-        guessTheDiceSumTable.Initialize();
-        oddOrEvenTable.Initialize();
-        yesOrNoTable.Initialize();
-        higherOrLowerTable.Initialize();
-        rouletteTable.Initialize();
-    }
-    
-    void Reset()
-    {
-        guessTheDiceSumTable.Reset();
-        oddOrEvenTable.Reset();
-        yesOrNoTable.Reset();
-        higherOrLowerTable.Reset();
-        rouletteTable.Reset();
-    }
-};
-
-enum class EOptions
-{
-    CashOut,
-    Stats,
-    About,
-    Quit
-};
-
-enum class EMinigameType
-{
-    GuessTheDiceSum = 1,
-    OddOrEven = 2,
-    YesOrNo = 3,
-    HigherOrLower = 4,
-    Roulette = 5
-};
-
-enum class EStates
-{
-    MainMenu,
-    Game
-};
-
-enum class EStakeType
-{
-    High,
-    Low
-};
+struct Casino;

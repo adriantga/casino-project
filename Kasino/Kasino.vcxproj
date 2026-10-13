@@ -159,7 +159,6 @@
     <ClCompile Include="HigherOrLower.cpp" />
     <ClCompile Include="Kasino.cpp" />
     <ClCompile Include="MenuController.cpp" />
-    <ClCompile Include="INeedToRemoveThisLater.cpp" />
     <ClCompile Include="OddOrEven.cpp" />
     <ClCompile Include="Roulette.cpp" />
     <ClCompile Include="StateController.cpp" />
@@ -173,7 +172,6 @@
     <ClInclude Include="HigherOrLower.h" />
     <ClInclude Include="Kasino.h" />
     <ClInclude Include="MenuController.h" />
-    <ClInclude Include="INeedToRemoveThisLater.h" />
     <ClInclude Include="OddOrEven.h" />
     <ClInclude Include="Roulette.h" />
     <ClInclude Include="StateController.h" />

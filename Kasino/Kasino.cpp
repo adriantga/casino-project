@@ -4,55 +4,47 @@
 #include "Utilities.h"
 #include "Kasino.h"
 
-#include "INeedToRemoveThisLater.h"
 #include "StateController.h"
 #include "Stats.h"
+#include "MenuController.h"
 
 /*
  * GOALS:
  * - Create separate classes for each game mode/table (can't inherit which I don't agree with)
  * - Optimize the game (eventually)
  */
-void InitializeStakeBets(Player& aPlayer, std::array<int, 3>& standardBets, std::array<int, 3>& stakeBets)
+void InitializeStakeBets(Player& aPlayer, std::array<int, 3>& aStandardBets, std::array<int, 3>& aStakeBets)
 {
     constexpr int LOW_STAKES_MIN_BET = 1;
     constexpr int LOW_STAKES_MAX_BET = 30;
     constexpr int HIGH_STAKES_MIN_BET = 50;
 
-    int highestBet = aPlayer.money;
+    int aHighestBet = aPlayer.money;
 
-    standardBets = {LOW_STAKES_MIN_BET, highestBet};
-    stakeBets = {LOW_STAKES_MIN_BET, LOW_STAKES_MAX_BET, HIGH_STAKES_MIN_BET};
+    aStandardBets = {LOW_STAKES_MIN_BET, aHighestBet};
+    aStakeBets = {LOW_STAKES_MIN_BET, LOW_STAKES_MAX_BET, HIGH_STAKES_MIN_BET};
 }
 
 int main()
 {
-    Dice dice;
+    Dice aDice;
 
-    bool playerHasEnteredName = false;
-    const char* playerName = "N/A";
-    Player player = {Constants::startingBalance, playerName, playerHasEnteredName};
+    bool aPlayerHasEnteredName = false;
+    const char* aPlayerName = "N/A";
+    Player aPlayer = {Constants::startingBalance, aPlayerName, aPlayerHasEnteredName};
 
-    PlayerStats playerStats;
-    Game game;
+    PlayerStats aPlayerStats;
+    Game aGame;
 
-    std::array<EMinigameType, Constants::minigameCount> minigameTypes = {
+    std::array<EMinigameType, Constants::minigameCount> aMinigameTypes = {
         EMinigameType::GuessTheDiceSum, EMinigameType::OddOrEven, EMinigameType::YesOrNo, EMinigameType::HigherOrLower,
         EMinigameType::Roulette
     };
     
-    InitializeStakeBets(player, player.standardBets, player.stakeBets);
-    
-    std::array<INeedToRemoveThisLater, minigameTypes.size()> minigames = {
-        INeedToRemoveThisLater{player, player.stakeBets, true}, INeedToRemoveThisLater{player, player.standardBets, false}, INeedToRemoveThisLater{player, player.stakeBets, true},
-        INeedToRemoveThisLater{player, player.standardBets, false}, INeedToRemoveThisLater{player, player.standardBets, false}
-    };
-    for (int i = 0; i < minigames.size(); i++)
-    {
-        minigames[i].Initialize(minigameTypes[i]);
-    }
+    InitializeStakeBets(aPlayer, aPlayer.standardBets, aPlayer.stakeBets);
 
-    Casino aCasino = {dice, player, playerStats, game, minigames, minigameTypes};
+    Casino aCasino = {aDice, aPlayer, aPlayerStats, aGame, aMinigameTypes};
+    aCasino.Initialize();
 
     ResetStats(aCasino);
     ResetBalance(aCasino);
@@ -64,14 +56,14 @@ int main()
     return 0;
 }
 
-void RefuseGame(bool& aCantPlay, Casino& casino)
+void RefuseGame(bool& aCantPlay, Casino& aCasino)
 {
     aCantPlay = true;
     WriteLine("As you walk over to the table, the guards immediately escort you away.");
     WriteLine("You start to wonder why. You eventually land on the question 'Maybe I've won too much?'.");
     Pause();
     ClearConsole();
-    ChangeState(EStates::Game, casino);
+    ChangeState(EStates::Game, aCasino);
 }
 
 void ResetBalance(Casino& aCasino)
@@ -102,10 +94,7 @@ bool IsValidName(char* aS)
 // Resets all stats after the player has lost the entire game.
 void ResetGame(Casino& aCasino)
 {
-    for (INeedToRemoveThisLater& minigame : aCasino.minigames)
-    {
-        minigame.Reset();
-    }
+    aCasino.Reset();
 
     aCasino.playerStats.wins = 0;
     aCasino.playerStats.losses = 0;
@@ -158,21 +147,21 @@ void Exit(Casino& aCasino)
 
 void TauntOrImpress(Casino& aCasino, int aWinAmount, int aLossAmount, int aImpressWinAmt, int aTauntLossAmt)
 {
-    int winLossDifference = aWinAmount - aLossAmount;
+    int aWinLossDifference = aWinAmount - aLossAmount;
 
-    bool shouldBeImpressed = HasExceeded(winLossDifference, aImpressWinAmt);
-    bool shouldTaunt = HasSubceeded(winLossDifference, -aTauntLossAmt);
+    bool aShouldBeImpressed = HasExceeded(aWinLossDifference, aImpressWinAmt);
+    bool aShouldTaunt = HasSubceeded(aWinLossDifference, -aTauntLossAmt);
     
-    if (shouldBeImpressed)
+    if (aShouldBeImpressed)
     {
         std::cout << "Well, " << aCasino.player.name << ". Seems like you're on a winning streak! Keep it up!\n";
     }
-    else if (shouldTaunt)
+    else if (aShouldTaunt)
     {
         std::cout << "Sad to see you struggling, " << aCasino.player.name <<
             ". Can't tell if you're naive or just plain unlucky!\n";
     }
-    else if (!shouldBeImpressed && !shouldTaunt)
+    else if (!aShouldBeImpressed && !aShouldTaunt)
     {
         std::cout << "Welcome " << aCasino.player.name << '\n';
     }
@@ -184,14 +173,14 @@ bool AskPlayerAgain(bool aIsInGame, Casino& aCasino)
     ClearConsole();
 
     WriteLine("Would you like to play again? (y/n) ");
-    char input;
-    std::cin >> input;
+    char aInput;
+    std::cin >> aInput;
 
-    bool isYes = IsCharacter(input, 'Y');
+    bool aIsYes = IsCharacter(aInput, 'Y');
 
-    while (!isYes)
+    while (!aIsYes)
     {
-        if (IsCharacter(input, 'N'))
+        if (IsCharacter(aInput, 'N'))
         {
             if (!aIsInGame)
             {
@@ -201,16 +190,16 @@ bool AskPlayerAgain(bool aIsInGame, Casino& aCasino)
             {
                 ClearInput();
                 ClearConsole();
-                aCasino.minigames[aCasino.game.currentMinigame].EnterGameMenu(aCasino);
+                aCasino.EnterGameMenu(aCasino.game.currentMinigame);
             }
             break;
         }
 
-        std::cin >> input;
-        isYes = IsCharacter(input, 'Y');
+        std::cin >> aInput;
+        aIsYes = IsCharacter(aInput, 'Y');
     }
 
-    if (isYes)
+    if (aIsYes)
     {
         ClearConsole();
         Pick(aCasino.game.currentMinigame + 1, true, aCasino);
@@ -239,17 +228,15 @@ void About(Casino& aCasino)
 
 void CashOut(Casino& aCasino)
 {
-    int cantPlayAmount = 0;
-    for (INeedToRemoveThisLater minigame : aCasino.minigames)
-    {
-        if (minigame.myCantPlay)
-        {
-            cantPlayAmount++;
-        }
-    }
+    int aCantPlayAmount = 0;
+    if (aCasino.guessTheDiceSumTable.CantPlay()) aCantPlayAmount++;
+    if (aCasino.oddOrEvenTable.CantPlay()) aCantPlayAmount++;
+    if (aCasino.yesOrNoTable.CantPlay()) aCantPlayAmount++;
+    if (aCasino.higherOrLowerTable.CantPlay()) aCantPlayAmount++;
+    if (aCasino.rouletteTable.CantPlay()) aCantPlayAmount++;
 
     // Um... alright.
-    if (cantPlayAmount != aCasino.minigames.size())
+    if (aCantPlayAmount != Constants::minigameCount)
     {
         WriteLine("'It's too early to cash out' is what your inner voice is telling you.");
         WriteLine("Maybe your inside voice is right...");
@@ -273,107 +260,6 @@ void CashOut(Casino& aCasino)
     ChangeState(EStates::MainMenu, aCasino);
 }
 
-void EnterNamePicker(Casino& aCasino)
-{
-    if (aCasino.player.hasEnteredName)
-    {
-        EnterGamePicker(aCasino);
-        return;
-    }
-
-    char confirmName = 'Y';
-    char denyName = 'N';
-
-    WriteLine("What's your name? (Must be between 2-16 characters)");
-
-    char myPlayerNameInput[17];
-    std::cin >> myPlayerNameInput;
-
-    while (std::cin.fail() || !IsValidName(myPlayerNameInput))
-    {
-        WriteLine("Please enter letters only! / Ensure the name is between 2-16 characters.");
-        ClearInput();
-        std::cin >> myPlayerNameInput;
-    }
-
-    ClearInput();
-
-    std::cout << "Your name is: " << myPlayerNameInput << ". Continue? (y to confirm, n to deny)" << '\n';
-
-    char confirmInput;
-    std::cin >> confirmInput;
-    while (std::cin.fail())
-    {
-        ClearInput();
-        std::cin >> confirmInput;
-        WriteLine("Please confirm or deny!");
-    }
-
-    bool hasConfirmedName = IsCharacter(confirmInput, confirmName);
-    bool hasDeniedName = IsCharacter(confirmInput, denyName);
-
-    if (!hasConfirmedName && !hasDeniedName)
-    {
-        std::cin >> confirmInput;
-
-        hasConfirmedName = IsCharacter(confirmInput, confirmName);
-        hasDeniedName = IsCharacter(confirmInput, denyName);
-    }
-
-    if (hasConfirmedName)
-    {
-        aCasino.player.hasEnteredName = true;
-        aCasino.player.name = myPlayerNameInput;
-
-        ClearConsole();
-        EnterGamePicker(aCasino);
-    }
-    else if (hasDeniedName)
-    {
-        ClearConsole();
-        EnterNamePicker(aCasino);
-    }
-}
-
-void EnterGamePicker(Casino& aCasino)
-{
-    const int OPTIONS = int(aCasino.minigameTypes.size()) + 2;
-
-    int input;
-
-    // Sooner or later I'll have to change this based on 
-    DrawTitle("GAME PICKER");
-
-    int minigameCount = int(aCasino.minigameTypes.size());
-
-    for (int i = 0; i < minigameCount; i++)
-    {
-        EMinigameType minigameType = aCasino.minigameTypes[i];
-        std::cout << "[" << (i + 1) << "] " << FromMinigameToChar(minigameType) << '\n';
-    }
-
-    DrawBreakerLine();
-
-    std::cout << "[" << (minigameCount + 1) << "] " << "Cash Out" << '\n';
-    std::cout << "[" << (minigameCount + 2) << "] " << "Back To Menu" << '\n';
-
-    DrawMenuLine();
-
-    BroadcastPlayerBalance(false, aCasino);
-
-    ForceInput(input);
-
-    input = Clamp(input, 1, OPTIONS);
-
-    Pick(input, true, aCasino);
-}
-
-void EnterMainMenu(Casino& aCasino)
-{
-    int input;
-    DrawMenu(aCasino, input, "THE ULTIMATE CASINO", "[1] Play Game\n[2] About\n[3] Stats\n[4] Quit", 4);
-    Pick(input, false, aCasino);
-}
 
 void SwitchTo(EOptions aOption, Casino& aCasino)
 {
@@ -385,7 +271,7 @@ void SwitchTo(EOptions aOption, Casino& aCasino)
     case EOptions::Stats:
         ShowStats(aCasino);
         Pause();
-        EnterMainMenu(aCasino);
+        Menu::EnterMainMenu(aCasino);
         break;
     case EOptions::About:
         About(aCasino);

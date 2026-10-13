@@ -1,8 +1,7 @@
-﻿#include <iostream>
+#include <iostream>
 #include "Helpers.h"
 #include <random>
 #include "Utilities.h"
-#include "INeedToRemoveThisLater.h"
 
 #include "Kasino.h"
 #include "StateController.h"
@@ -16,8 +15,8 @@ std::mt19937 distributor(rnd());
 
 int GetRandomNumber(int aMin, int aMax)
 {
-    std::uniform_int_distribution<int> generator(aMin, aMax);
-    return generator(distributor);
+    std::uniform_int_distribution<int> aGenerator(aMin, aMax);
+    return aGenerator(distributor);
 }
 
 const char* FromMinigameToChar(EMinigameType& aMinigame)
@@ -46,57 +45,85 @@ void DrawTitle(const char aTitleText[])
     DrawMenuLine();
 }
 
-int GetBetAmount(Casino& aCasino, int gameIndex, bool& aIsPlayingHighStakes)
+void GetBetLimits(Casino& aCasino, int aGameIndex, int& aMinBet, int& aMaxBet, bool& aHasStakes)
 {
-    INeedToRemoveThisLater& selectedMinigame = aCasino.minigames[gameIndex];
+    switch (aGameIndex)
+    {
+    case Minigames::MINIGAME_GUESS_THE_DICE_SUM:
+        aMinBet = aCasino.guessTheDiceSumTable.GetMinAllowedBet();
+        aMaxBet = aCasino.guessTheDiceSumTable.GetMaxAllowedBet();
+        aHasStakes = true;
+        break;
+    case Minigames::MINIGAME_HIGHER_OR_LOWER:
+        aMinBet = aCasino.higherOrLowerTable.GetMinAllowedBet();
+        aMaxBet = aCasino.higherOrLowerTable.GetMaxAllowedBet();
+        aHasStakes = true;
+        break;
+    case Minigames::MINIGAME_ODD_OR_EVEN:
+    case Minigames::MINIGAME_YES_OR_NO:
+    case Minigames::MINIGAME_ROULETTE:
+    default:
+        aMinBet = aCasino.player.standardBets[0];
+        aMaxBet = aCasino.player.money;
+        aHasStakes = false;
+        break;
+    }
+}
+
+int GetBetAmount(Casino& aCasino, int aGameIndex, bool& aIsPlayingHighStakes)
+{
+    int aMinAllowedBet = 0;
+    int aMaxAllowedBet = 0;
+    bool aHasStakes = false;
+    GetBetLimits(aCasino, aGameIndex, aMinAllowedBet, aMaxAllowedBet, aHasStakes);
     
-    int playerMoney = aCasino.player.money;
-    bool canPlay = !HasSubceeded(playerMoney, selectedMinigame.myMinAllowedBet);
+    int aPlayerMoney = aCasino.player.money;
+    bool aCanPlay = !HasSubceeded(aPlayerMoney, aMinAllowedBet);
     
     BroadcastPlayerBalance(false, aCasino);
     
-    if (!canPlay && aIsPlayingHighStakes && selectedMinigame.myHasStakes)
+    if (!aCanPlay && aIsPlayingHighStakes && aHasStakes)
     {
         ClearConsole();
         WriteLine("As you try to pull out money from your wallet, you notice that your wallet is emptier than you thought.");
         WriteLine("'You are low on funds. Come back when you have more', the security guard says.");
         Pause();
-        selectedMinigame.EnterGameMenu(aCasino);
-        return selectedMinigame.myMinAllowedBet;
+        aCasino.EnterGameMenu(aGameIndex);
+        return aMinAllowedBet;
     }
     
     WriteLine("How much are you betting?");
 
-    int result;
-    std::cin >> result;
+    int aResult;
+    std::cin >> aResult;
 
     while (std::cin.fail())
     {
         std::cout << "Please pick a valid number!" << '\n';
         ClearInput();
-        std::cin >> result;
+        std::cin >> aResult;
     }
     
-    bool isBetBiggerThanBank = HasExceeded(result, playerMoney);
-    while (isBetBiggerThanBank || result < selectedMinigame.myMinAllowedBet || result > selectedMinigame.myMaxAllowedBet)
+    bool aIsBetBiggerThanBank = HasExceeded(aResult, aPlayerMoney);
+    while (aIsBetBiggerThanBank || aResult < aMinAllowedBet || aResult > aMaxAllowedBet)
     {
-        if (isBetBiggerThanBank)
+        if (aIsBetBiggerThanBank)
         {
             std::cout << "You don't have the money you're betting!" << '\n';
         }
         else
         {
-            std::cout << "Invalid bet($" << selectedMinigame.myMinAllowedBet << "-" << selectedMinigame.myMaxAllowedBet <<
+            std::cout << "Invalid bet($" << aMinAllowedBet << "-" << aMaxAllowedBet <<
                 ")\n";    
             ClearInput();
         }
         
-        std::cin >> result;
-        isBetBiggerThanBank = HasExceeded(result, playerMoney);
+        std::cin >> aResult;
+        aIsBetBiggerThanBank = HasExceeded(aResult, aPlayerMoney);
     }
 
     ClearInput();
-    return result;
+    return aResult;
 }
 
 void DrawMenu(Casino& aCasino, int& aInput, const char aTitleText[], const char aOptions[], int aNumOptions,
@@ -273,27 +300,27 @@ void BroadcastWinOrLoss(Casino& aCasino, bool aIsWinner, int aWinAmount, int aLo
     
     Pause();
     ClearConsole();
-    aCasino.minigames[aCasino.game.currentMinigame].EnterGameMenu(aCasino);
+    aCasino.EnterGameMenu(aCasino.game.currentMinigame);
 }
 
 std::array<int, 12> BuildRow(int aRowStart)
 {
-    std::array<int, 12> result;
+    std::array<int, 12> aResult;
 
-    int num = aRowStart;
+    int aNum = aRowStart;
 
-    for (int i = 0; i < result.size(); i++)
+    for (int aI = 0; aI < aResult.size(); aI++)
     {
-        result[i] = num;
-        num += 3;
+        aResult[aI] = aNum;
+        aNum += 3;
     }
 
-    return result;
+    return aResult;
 }
 
-bool IsMatching(int current[], int target[])
+bool IsMatching(int aCurrent[], int aTarget[])
 {
-    return current == target;
+    return aCurrent == aTarget;
 }
 
 char ToLower(char aCharacter)
