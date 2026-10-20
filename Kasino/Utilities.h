@@ -6,7 +6,7 @@
 
 void ForceInput(int& aInput);
 bool IsCharacter(char aInput, char aValue);
-const char* FromMinigameToChar(EMinigameType& aMinigame);
+const char* FromMinigameToChar(ETableType& aTable);
 int GetRandomNumber(int aMin, int aMax);
 void ClearConsole();
 void ClearInput();

@@ -8,49 +8,44 @@
 #include "Stats.h"
 #include "MenuController.h"
 
-/*
- * GOALS:
- * - Create separate classes for each game mode/table (can't inherit which I don't agree with)
- * - Optimize the game (eventually)
- */
 void InitializeStakeBets(Player& aPlayer, std::array<int, 3>& aStandardBets, std::array<int, 3>& aStakeBets)
 {
     constexpr int LOW_STAKES_MIN_BET = 1;
     constexpr int LOW_STAKES_MAX_BET = 30;
     constexpr int HIGH_STAKES_MIN_BET = 50;
 
-    int aHighestBet = aPlayer.money;
+    int highestBet = aPlayer.money;
 
-    aStandardBets = {LOW_STAKES_MIN_BET, aHighestBet};
+    aStandardBets = {LOW_STAKES_MIN_BET, highestBet};
     aStakeBets = {LOW_STAKES_MIN_BET, LOW_STAKES_MAX_BET, HIGH_STAKES_MIN_BET};
 }
 
 int main()
 {
-    Dice aDice;
+    Dice dice;
 
-    bool aPlayerHasEnteredName = false;
-    const char* aPlayerName = "N/A";
-    Player aPlayer = {Constants::startingBalance, aPlayerName, aPlayerHasEnteredName};
+    bool hasEnteredName = false;
+    const char* playerName = "N/A";
+    Player player = {Constants::startingBalance, playerName, hasEnteredName};
 
-    PlayerStats aPlayerStats;
-    Game aGame;
+    PlayerStats playerStats;
+    Game game;
 
-    std::array<EMinigameType, Constants::minigameCount> aMinigameTypes = {
-        EMinigameType::GuessTheDiceSum, EMinigameType::OddOrEven, EMinigameType::YesOrNo, EMinigameType::HigherOrLower,
-        EMinigameType::Roulette
+    std::array<ETableType, Constants::tableCount> aMinigameTypes = {
+        ETableType::GuessTheDiceSum, ETableType::OddOrEven, ETableType::YesOrNo, ETableType::HigherOrLower,
+        ETableType::Roulette
     };
     
-    InitializeStakeBets(aPlayer, aPlayer.standardBets, aPlayer.stakeBets);
+    InitializeStakeBets(player, player.standardBets, player.stakeBets);
 
-    Casino aCasino = {aDice, aPlayer, aPlayerStats, aGame, aMinigameTypes};
+    Casino aCasino = {dice, player, playerStats, game, aMinigameTypes};
     aCasino.Initialize();
 
     ResetStats(aCasino);
     ResetBalance(aCasino);
     if (!aCasino.game.isQuitting)
     {
-        ChangeState(EStates::MainMenu, aCasino);
+        ChangeState(EGameState::MainMenu, aCasino);
     }
 
     return 0;
@@ -63,7 +58,7 @@ void RefuseGame(bool& aCantPlay, Casino& aCasino)
     WriteLine("You start to wonder why. You eventually land on the question 'Maybe I've won too much?'.");
     Pause();
     ClearConsole();
-    ChangeState(EStates::Game, aCasino);
+    ChangeState(EGameState::Game, aCasino);
 }
 
 void ResetBalance(Casino& aCasino)
@@ -149,38 +144,37 @@ void TauntOrImpress(Casino& aCasino, int aWinAmount, int aLossAmount, int aImpre
 {
     int aWinLossDifference = aWinAmount - aLossAmount;
 
-    bool aShouldBeImpressed = HasExceeded(aWinLossDifference, aImpressWinAmt);
-    bool aShouldTaunt = HasSubceeded(aWinLossDifference, -aTauntLossAmt);
+    bool isImpressed = HasExceeded(aWinLossDifference, aImpressWinAmt);
+    bool isTaunting = HasSubceeded(aWinLossDifference, -aTauntLossAmt);
     
-    if (aShouldBeImpressed)
+    if (isImpressed)
     {
         std::cout << "Well, " << aCasino.player.name << ". Seems like you're on a winning streak! Keep it up!\n";
     }
-    else if (aShouldTaunt)
+    else if (isTaunting)
     {
         std::cout << "Sad to see you struggling, " << aCasino.player.name <<
             ". Can't tell if you're naive or just plain unlucky!\n";
     }
-    else if (!aShouldBeImpressed && !aShouldTaunt)
+    else if (!isImpressed && !isTaunting)
     {
         std::cout << "Welcome " << aCasino.player.name << '\n';
     }
 }
 
-// TODO: REPURPOSE
 bool AskPlayerAgain(bool aIsInGame, Casino& aCasino)
 {
     ClearConsole();
 
     WriteLine("Would you like to play again? (y/n) ");
-    char aInput;
-    std::cin >> aInput;
+    char input;
+    std::cin >> input;
 
-    bool aIsYes = IsCharacter(aInput, 'Y');
+    bool hasPickedYes = IsCharacter(input, 'Y');
 
-    while (!aIsYes)
+    while (!hasPickedYes)
     {
-        if (IsCharacter(aInput, 'N'))
+        if (IsCharacter(input, 'N'))
         {
             if (!aIsInGame)
             {
@@ -195,11 +189,11 @@ bool AskPlayerAgain(bool aIsInGame, Casino& aCasino)
             break;
         }
 
-        std::cin >> aInput;
-        aIsYes = IsCharacter(aInput, 'Y');
+        std::cin >> input;
+        hasPickedYes = IsCharacter(input, 'Y');
     }
 
-    if (aIsYes)
+    if (hasPickedYes)
     {
         ClearConsole();
         Pick(aCasino.game.currentMinigame + 1, true, aCasino);
@@ -223,27 +217,26 @@ void About(Casino& aCasino)
 
     Pause();
     ClearConsole();
-    ChangeState(EStates::MainMenu, aCasino);
+    ChangeState(EGameState::MainMenu, aCasino);
 }
 
 void CashOut(Casino& aCasino)
 {
-    int aCantPlayAmount = 0;
-    if (aCasino.guessTheDiceSumTable.CantPlay()) aCantPlayAmount++;
-    if (aCasino.oddOrEvenTable.CantPlay()) aCantPlayAmount++;
-    if (aCasino.yesOrNoTable.CantPlay()) aCantPlayAmount++;
-    if (aCasino.higherOrLowerTable.CantPlay()) aCantPlayAmount++;
-    if (aCasino.rouletteTable.CantPlay()) aCantPlayAmount++;
+    int cantPlayAmount = 0;
+    if (aCasino.guessTheDiceSumTable.CantPlay()) cantPlayAmount++;
+    if (aCasino.oddOrEvenTable.CantPlay()) cantPlayAmount++;
+    if (aCasino.yesOrNoTable.CantPlay()) cantPlayAmount++;
+    if (aCasino.higherOrLowerTable.CantPlay()) cantPlayAmount++;
+    if (aCasino.rouletteTable.CantPlay()) cantPlayAmount++;
 
-    // Um... alright.
-    if (aCantPlayAmount != Constants::minigameCount)
+    if (cantPlayAmount != Constants::tableCount)
     {
         WriteLine("'It's too early to cash out' is what your inner voice is telling you.");
         WriteLine("Maybe your inside voice is right...");
         WriteLine("(Get kicked out from every game to cash out!)");
         Pause();
         ClearConsole();
-        ChangeState(EStates::Game, aCasino);
+        ChangeState(EGameState::Game, aCasino);
         return;
     }
 
@@ -257,7 +250,7 @@ void CashOut(Casino& aCasino)
     Pause();
     ClearConsole();
     ResetGame(aCasino);
-    ChangeState(EStates::MainMenu, aCasino);
+    ChangeState(EGameState::MainMenu, aCasino);
 }
 
 

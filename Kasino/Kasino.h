@@ -13,7 +13,7 @@ struct Casino
     Player& player;
     PlayerStats& playerStats;
     Game& game;
-    std::array<EMinigameType, Constants::minigameCount>& minigameTypes;
+    std::array<ETableType, Constants::tableCount>& minigameTypes;
     
     GuessTheDiceSum guessTheDiceSumTable;
     OddOrEven oddOrEvenTable;
@@ -22,7 +22,7 @@ struct Casino
     Roulette rouletteTable;
 
     Casino(Dice& aDice, Player& aPlayer, PlayerStats& aPlayerStats, Game& aGame,
-           std::array<EMinigameType, Constants::minigameCount>& aMinigameTypes)
+           std::array<ETableType, Constants::tableCount>& aMinigameTypes)
         : dice(aDice), player(aPlayer), playerStats(aPlayerStats), game(aGame), minigameTypes(aMinigameTypes),
           guessTheDiceSumTable(aPlayer, aPlayer.stakeBets),
           higherOrLowerTable(aPlayer, aPlayer.stakeBets)

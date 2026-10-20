@@ -4,7 +4,7 @@
 
 struct Constants
 {
-    static const int minigameCount = 5;
+    static const int tableCount = 5;
     static const int startingBalance = 250;
     static const int playerNameMinSize = 2;
     static const int playerNameMaxSize = 16;
@@ -89,7 +89,7 @@ enum class EOptions
     Quit
 };
 
-enum class EMinigameType
+enum class ETableType
 {
     GuessTheDiceSum = 1,
     OddOrEven = 2,
@@ -98,7 +98,7 @@ enum class EMinigameType
     Roulette = 5
 };
 
-enum class EStates
+enum class EGameState
 {
     MainMenu,
     Game
@@ -120,7 +120,6 @@ struct MinigameSettings
     int cachedReward = 0;
     bool useCachedReward = false;
 
-    // Used by 'Roulette' and 'Yes or No'
     int rangeStart = 0;
     int rangeEnd = 0;
 
@@ -128,7 +127,6 @@ struct MinigameSettings
     char secondChoice = ' ';
     char quitChoice = 'Q';
 
-    // Only used by 'Roulette' at the moment
     int alternativeRewardMultiplier = 1;
     int baseReward = 0;
 
@@ -142,7 +140,7 @@ struct MinigameSettings
     
     bool isPlayingHighStakes = false;
 
-    EMinigameType minigameType;
+    ETableType minigameType;
     int winLimit = 0;
 };
 

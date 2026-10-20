@@ -12,7 +12,7 @@ void Pick(int aChoice, bool aIsInGame, Casino& aCasino)
     ClearConsole();
     if (aIsInGame)
     {
-        int aMinigamesCount = Constants::minigameCount;
+        int aMinigamesCount = Constants::tableCount;
 
         aChoice = Clamp(aChoice, 1, aMinigamesCount + 2);
 
@@ -24,7 +24,7 @@ void Pick(int aChoice, bool aIsInGame, Casino& aCasino)
             }
             else
             {
-                ChangeState(EStates::MainMenu, aCasino);
+                ChangeState(EGameState::MainMenu, aCasino);
             }
         }
         else
@@ -41,7 +41,7 @@ void Pick(int aChoice, bool aIsInGame, Casino& aCasino)
     case 1:
         if (aCasino.player.hasEnteredName)
         {
-            ChangeState(EStates::Game, aCasino);
+            ChangeState(EGameState::Game, aCasino);
         }
         else
         {
@@ -60,14 +60,14 @@ void Pick(int aChoice, bool aIsInGame, Casino& aCasino)
     }
 }
 
-void ChangeState(EStates aTargetState, Casino& aCasino)
+void ChangeState(EGameState aTargetState, Casino& aCasino)
 {
     switch (aTargetState)
     {
-    case EStates::Game:
+    case EGameState::Game:
         Menu::EnterGamePicker(aCasino);
         break;
-    case EStates::MainMenu:
+    case EGameState::MainMenu:
         Menu::EnterMainMenu(aCasino);
         break;
     }

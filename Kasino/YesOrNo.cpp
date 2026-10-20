@@ -23,7 +23,7 @@ void YesOrNo::EnterGameMenu(Casino& aCasino)
 {
     ClearConsole();
     
-    int aInput;
+    int input;
     DrawBreakerLine();
     WriteLine("Welcome to Yes or No!");
     DrawBreakerLine();
@@ -33,24 +33,24 @@ void YesOrNo::EnterGameMenu(Casino& aCasino)
     BroadcastPlayerBalance(false, aCasino);
     DrawBreakerLine();
     
-    ForceInput(aInput);
+    ForceInput(input);
     ClearConsole();
 
-    constexpr int aPlayGame = 1;
-    constexpr int aShowInstructions = 2;
-    constexpr int aLeaveTable = 3;
+    constexpr int PLAY_TABLE = 1;
+    constexpr int SHOW_INSTRUCTIONS = 2;
+    constexpr int LEAVE_TABLE = 3;
     
-    aInput = Max(aInput, aLeaveTable);
+    input = Max(input, LEAVE_TABLE);
 
-    switch (aInput)
+    switch (input)
     {
-    case aPlayGame:
+    case PLAY_TABLE:
         PlayTable(aCasino);
         break;
-    case aShowInstructions:
+    case SHOW_INSTRUCTIONS:
         ShowRules(aCasino);
         break;
-    case aLeaveTable:
+    case LEAVE_TABLE:
         Menu::EnterGamePicker(aCasino);
         break;
     }
@@ -64,8 +64,8 @@ void YesOrNo::PlayTable(Casino& aCasino)
         return;
     }
 	
-	bool aIsPlayingHighStakes = false;
-	myBet = GetBetAmount(aCasino, Minigames::MINIGAME_YES_OR_NO, aIsPlayingHighStakes);
+	bool isPlayingHighStakes = false;
+	myBet = GetBetAmount(aCasino, Minigames::MINIGAME_YES_OR_NO, isPlayingHighStakes);
 	
     ForceRange();
     
@@ -82,9 +82,9 @@ void YesOrNo::ForceRange()
     
     if (myRangeStart > myRangeEnd)
     {
-        const int aTemp = myRangeEnd;
+        const int temp = myRangeEnd;
         myRangeStart = myRangeEnd;
-        myRangeEnd = aTemp;
+        myRangeEnd = temp;
     }
 
     if (myRangeStart == myRangeEnd)
@@ -112,26 +112,26 @@ void YesOrNo::OnPlay(Casino& aCasino)
 {
     mySettings.rewardMultiplier = 1;
     
-    char aYes = 'Y';
-    char aNo = 'N';
-    char aQuit = 'Q';
+    char yes = 'Y';
+    char no = 'N';
+    char quit = 'Q';
     
-    int aActualRoll = GetRoll();
+    int actualRoll = GetRoll();
     
-    int aNumConsecutiveCorrectGuesses = 0;
+    int numConsecutiveCorrectGuesses = 0;
     
     std::cout << "Is the number between " << myRangeStart << " and " << myRangeEnd << "?" << '\n';
     
-    char aPlayerPick;
-    std::cin >> aPlayerPick;
+    char playerPick;
+    std::cin >> playerPick;
     
-    bool aPlayerPickedYes = IsCharacter(aPlayerPick, aYes);
-    bool aPlayerPickedNo = IsCharacter(aPlayerPick, aNo);
-    bool aPlayerIsQuitting = IsCharacter(aPlayerPick, aQuit);
+    bool hasPickedYes = IsCharacter(playerPick, yes);
+    bool hasPickedNo = IsCharacter(playerPick, no);
+    bool hasQuit = IsCharacter(playerPick, quit);
 
-    while (!aPlayerIsQuitting)
+    while (!hasQuit)
     {
-        if (!aPlayerPickedYes && !aPlayerPickedNo)
+        if (!hasPickedYes && !hasPickedNo)
         {
             WriteLine("Please write 'y' for yes or 'n' for no");
         }
@@ -139,24 +139,24 @@ void YesOrNo::OnPlay(Casino& aCasino)
         while (std::cin.fail())
         {
             ClearInput();
-            std::cin >> aPlayerPick;
+            std::cin >> playerPick;
         }
         
-        if (aPlayerPickedYes || aPlayerPickedNo)
+        if (hasPickedYes || hasPickedNo)
         {
-            const bool aIsCorrectPick = (aPlayerPickedYes && IsInRange(aActualRoll, myRangeStart, myRangeEnd)) || (aPlayerPickedNo && !IsInRange(aActualRoll, myRangeStart, myRangeEnd));
+            const bool isCorrectPick = (hasPickedYes && IsInRange(actualRoll, myRangeStart, myRangeEnd)) || (hasPickedNo && !IsInRange(actualRoll, myRangeStart, myRangeEnd));
             
-            if (aIsCorrectPick)
+            if (isCorrectPick)
             {
-                aNumConsecutiveCorrectGuesses++;
-                if (aNumConsecutiveCorrectGuesses >= mySettings.rewardIncreaseThreshold)
+                numConsecutiveCorrectGuesses++;
+                if (numConsecutiveCorrectGuesses >= mySettings.rewardIncreaseThreshold)
                 {
-                    aNumConsecutiveCorrectGuesses = 0;
+                    numConsecutiveCorrectGuesses = 0;
                     mySettings.rewardMultiplier++;
                     std::cout << "Your reward multiplier has increased. Current multiplier: " << mySettings.rewardMultiplier << '\n';
                 }
              
-                aActualRoll = GetRoll();
+                actualRoll = GetRoll();
                 ForceRange();
                 
                 std::cout << "Is the number between " << myRangeStart << " and " << myRangeEnd << "?\n";
@@ -165,24 +165,24 @@ void YesOrNo::OnPlay(Casino& aCasino)
             else
             {
                 mySettings.cachedReward = 0;
-                std::cout << "You guessed wrong! The number was " << aActualRoll << " which means the number was " << (IsInRange(aActualRoll, myRangeStart, myRangeEnd) ? "in" : "not in") << " range.\n";
+                std::cout << "You guessed wrong! The number was " << actualRoll << " which means the number was " << (IsInRange(actualRoll, myRangeStart, myRangeEnd) ? "in" : "not in") << " range.\n";
                 break;
             }
         }
         
-        std::cin >> aPlayerPick;
-        aPlayerPickedYes = IsCharacter(aPlayerPick, aYes);
-        aPlayerPickedNo = IsCharacter(aPlayerPick, aNo);
-        aPlayerIsQuitting = IsCharacter(aPlayerPick, aQuit);
+        std::cin >> playerPick;
+        hasPickedYes = IsCharacter(playerPick, yes);
+        hasPickedNo = IsCharacter(playerPick, no);
+        hasQuit = IsCharacter(playerPick, quit);
     }
     
-    int aWinAmount = 0;
+    int winAmount = 0;
     
     if (mySettings.cachedReward > 0)
     {
-        aWinAmount = myBet + (mySettings.cachedReward * mySettings.rewardMultiplier);
+        winAmount = myBet + (mySettings.cachedReward * mySettings.rewardMultiplier);
     }
     
-    bool aIsWinner = aWinAmount > 0 && aPlayerIsQuitting;
-    BroadcastWinOrLoss(aCasino, aIsWinner, aWinAmount, myBet, aIsWinner ? myBase.winAmount : myBase.lossAmount);
+    bool isWinner = winAmount > 0 && hasQuit;
+    BroadcastWinOrLoss(aCasino, isWinner, winAmount, myBet, isWinner ? myBase.winAmount : myBase.lossAmount);
 }

@@ -32,7 +32,7 @@ void OddOrEven::EnterGameMenu(Casino& aCasino)
 {
     ClearConsole();
     
-    int aInput;
+    int input;
     DrawBreakerLine();
     WriteLine("Welcome to Even or Odd!");
     DrawBreakerLine();
@@ -42,24 +42,24 @@ void OddOrEven::EnterGameMenu(Casino& aCasino)
     BroadcastPlayerBalance(false, aCasino);
     DrawBreakerLine();
     
-    ForceInput(aInput);
+    ForceInput(input);
     ClearConsole();
 
-    constexpr int aPlayGame = 1;
-    constexpr int aShowInstructions = 2;
-    constexpr int aLeaveTable = 3;
+    constexpr int PLAY_TABLE = 1;
+    constexpr int SHOW_INSTRUCTIONS = 2;
+    constexpr int LEAVE_TABLE = 3;
     
-    aInput = Max(aInput, aLeaveTable);
+    input = Max(input, LEAVE_TABLE);
 
-    switch (aInput)
+    switch (input)
     {
-    case aPlayGame:
+    case PLAY_TABLE:
         PlayTable(aCasino);
         break;
-    case aShowInstructions:
+    case SHOW_INSTRUCTIONS:
         ShowRules(aCasino);
         break;
-    case aLeaveTable:
+    case LEAVE_TABLE:
         Menu::EnterGamePicker(aCasino);
         break;
     }
@@ -73,8 +73,8 @@ void OddOrEven::PlayTable(Casino& aCasino)
         return;
     }
 	
-	bool aIsPlayingHighStakes = false;
-	myBet = GetBetAmount(aCasino, Minigames::MINIGAME_ODD_OR_EVEN, aIsPlayingHighStakes);
+	bool isPlayingHighStakes = false;
+	myBet = GetBetAmount(aCasino, Minigames::MINIGAME_ODD_OR_EVEN, isPlayingHighStakes);
 	
 	TauntOrImpress(aCasino, myBase.winAmount, myBase.lossAmount, mySettings.winImpressAmount,
                    mySettings.lossTauntAmount);
@@ -84,8 +84,8 @@ void OddOrEven::PlayTable(Casino& aCasino)
 
 void OddOrEven::OnPlay(Casino& aCasino)
 {
-	char aEven = 'E';
-	char aOdd = 'O';
+	char even = 'E';
+	char odd = 'O';
 	
 	RollDice(aCasino);
 	
@@ -94,32 +94,32 @@ void OddOrEven::OnPlay(Casino& aCasino)
 	
 	WriteLine("Take your pick! Type 'e' for even and 'o' for odd!");
 	
-	char aPlayerPick;
-	std::cin >> aPlayerPick;
+	char playerPick;
+	std::cin >> playerPick;
 	
-	bool aPlayerPickedEven = IsCharacter(aPlayerPick, aEven);
-	bool aPlayerPickedOdd = IsCharacter(aPlayerPick, aOdd);
+	bool hasPickedEven = IsCharacter(playerPick, even);
+	bool hasPickedOdd = IsCharacter(playerPick, odd);
 
-	const bool aIsEven = IsEven(aCasino.dice.die1) && IsEven(aCasino.dice.die2);
-	const bool aIsOdd = !IsEven(aCasino.dice.die1) && !IsEven(aCasino.dice.die2);
+	const bool isEven = IsEven(aCasino.dice.die1) && IsEven(aCasino.dice.die2);
+	const bool isOdd = !IsEven(aCasino.dice.die1) && !IsEven(aCasino.dice.die2);
 
-	while (!aPlayerPickedEven && !aPlayerPickedOdd)
+	while (!hasPickedEven && !hasPickedOdd)
 	{
 		while (std::cin.fail())
 		{
 			ClearInput();
-			std::cin >> aPlayerPick;
+			std::cin >> playerPick;
 		}
 		
-		std::cin >> aPlayerPick;
+		std::cin >> playerPick;
 		
-		aPlayerPickedEven = IsCharacter(aPlayerPick, aEven);
-		aPlayerPickedOdd = IsCharacter(aPlayerPick, aOdd);
+		hasPickedEven = IsCharacter(playerPick, even);
+		hasPickedOdd = IsCharacter(playerPick, odd);
 	}
 	
-	bool aIsWinner = (aPlayerPickedEven && aIsEven) || (aPlayerPickedOdd && aIsOdd);
+	bool isWinner = (hasPickedEven && isEven) || (hasPickedOdd && isOdd);
 	BroadcastDiceResult(aCasino, false);
 	
-	int aWinAmount = myBet * mySettings.rewardMultiplier;
-	BroadcastWinOrLoss(aCasino, aIsWinner, aWinAmount, myBet, aIsWinner ? myBase.winAmount : myBase.lossAmount);
+	int winAmount = myBet * mySettings.rewardMultiplier;
+	BroadcastWinOrLoss(aCasino, isWinner, winAmount, myBet, isWinner ? myBase.winAmount : myBase.lossAmount);
 }

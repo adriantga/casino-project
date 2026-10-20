@@ -43,7 +43,7 @@ void Roulette::EnterGameMenu(Casino& aCasino)
 {
 	ClearConsole();
     
-    int aInput;
+    int input;
     DrawBreakerLine();
     WriteLine("Welcome to Roulette!");
     DrawBreakerLine();
@@ -53,24 +53,24 @@ void Roulette::EnterGameMenu(Casino& aCasino)
     BroadcastPlayerBalance(false, aCasino);
     DrawBreakerLine();
     
-    ForceInput(aInput);
+    ForceInput(input);
     ClearConsole();
 
-    constexpr int aPlayGame = 1;
-    constexpr int aShowInstructions = 2;
-    constexpr int aLeaveTable = 3;
+    constexpr int PLAY_TABLE = 1;
+    constexpr int SHOW_INSTRUCTIONS = 2;
+    constexpr int LEAVE_TABLE = 3;
     
-    aInput = Max(aInput, aLeaveTable);
+    input = Max(input, LEAVE_TABLE);
 
-    switch (aInput)
+    switch (input)
     {
-    case aPlayGame:
+    case PLAY_TABLE:
         PlayTable(aCasino);
         break;
-    case aShowInstructions:
+    case SHOW_INSTRUCTIONS:
         ShowRules(aCasino);
         break;
-    case aLeaveTable:
+    case LEAVE_TABLE:
         Menu::EnterGamePicker(aCasino);
         break;
     }
@@ -95,176 +95,179 @@ void Roulette::PlayTable(Casino& aCasino)
 
 void Roulette::OnPlay(Casino& aCasino)
 {
-	char aCorrectPick = ' ';
-	int aCorrectRow = 0;
-	int aLandedCol = -1;
+	char correctPick = ' ';
+	int correctRow;
+	int landedCol;
 	
-	int aLanding = GetRandomNumber(aCasino.game.rouletteStraightMin, aCasino.game.rouletteStraightMax);
-	std::array<int, 12> aCorrectRowArray = {};
-	bool aIsWinner = false;
+	int landing = GetRandomNumber(aCasino.game.rouletteStraightMin, aCasino.game.rouletteStraightMax);
+	std::array<int, 12> correctRowArray;
+	bool isWinner;
 	
-	int aPlayerDecision;
-	std::cin >> aPlayerDecision;
+	int playerDecision;
+	std::cin >> playerDecision;
 
 	while (std::cin.fail())
 	{
 		WriteLine("Please enter a valid number!");
 		ClearInput();
-		std::cin >> aPlayerDecision;
+		std::cin >> playerDecision;
 	}
 
-	while (HasSubceeded(aPlayerDecision, aCasino.game.rouletteBettingTypeMin) || HasExceeded(aPlayerDecision, aCasino.game.rouletteBettingTypeMax))
+	while (HasSubceeded(playerDecision, aCasino.game.rouletteBettingTypeMin) || HasExceeded(playerDecision, aCasino.game.rouletteBettingTypeMax))
 	{
 		std::cout << "Please enter a valid number in range(" << aCasino.game.rouletteBettingTypeMin << " - " << aCasino.game.rouletteBettingTypeMax << ")\n";
-		std::cin >> aPlayerDecision;
+		std::cin >> playerDecision;
 	}
 	
-	if (aPlayerDecision == aCasino.game.rouletteStraight)
+	if (playerDecision == aCasino.game.rouletteStraight)
 	{
 		WriteLine("What's your guess? (0-36)");
 
-		int aPlayerInput;
-        std::cin >> aPlayerInput;
+		int playerInput;
+        std::cin >> playerInput;
 
         while (std::cin.fail())
         {
             WriteLine("Please make a valid pick!");
 
             ClearInput();
-            std::cin >> aPlayerInput;
+            std::cin >> playerInput;
         }
 
-        aPlayerInput = Clamp(aPlayerInput, aCasino.game.rouletteStraightMin,
+        playerInput = Clamp(playerInput, aCasino.game.rouletteStraightMin,
                              aCasino.game.rouletteStraightMax);
 
-        aIsWinner = aPlayerInput == aLanding;
+        isWinner = playerInput == landing;
 	}
-	else if (aPlayerDecision == aCasino.game.rouletteRedBlack)
+	else if (playerDecision == aCasino.game.rouletteRedBlack)
 	{
 		WriteLine("What's your guess? ('r' for red, 'b' for black)");
 		
-		char aRed = 'R';
-		char aBlack = 'B';
+		char red = 'R';
+		char black = 'B';
 		
-		int aCachedRoll = GetRoll();
+		int cachedRoll = GetRoll();
 
-		bool aIsRedPicked = HasSubceeded(aCachedRoll, 50) && aCachedRoll > 0;
+		bool isRedPicked = HasSubceeded(cachedRoll, 50) && cachedRoll > 0;
 
-		aCorrectPick = aIsRedPicked ? aRed : aBlack;
+		correctPick = isRedPicked ? red : black;
 
-		char aPlayerPick;
-		std::cin >> aPlayerPick;
+		char playerPick;
+		std::cin >> playerPick;
 		
-		bool aPlayerPickedRed = IsCharacter(aPlayerPick, aRed);
-		bool aPlayerPickedBlack = IsCharacter(aPlayerPick, aBlack);
+		bool hasPickedRed = IsCharacter(playerPick, red);
+		bool hasPickedBlack = IsCharacter(playerPick, black);
 		
-		bool aIsCorrectPick = IsCharacter(aPlayerPick, aCorrectPick);
+		bool isCorrectPick = IsCharacter(playerPick, correctPick);
 
-		while (!aPlayerPickedRed && !aPlayerPickedBlack)
+		while (!hasPickedRed && !hasPickedBlack)
 		{
 			WriteLine("Please make a valid pick!");
 
             while (std::cin.fail())
             {
                 ClearInput();
-                std::cin >> aPlayerPick;
+                std::cin >> playerPick;
             }
 
-            std::cin >> aPlayerPick;
+            std::cin >> playerPick;
 
-            aPlayerPickedRed = IsCharacter(aPlayerPick, aRed);
-            aPlayerPickedBlack = IsCharacter(aPlayerPick, aBlack);
+            hasPickedRed = IsCharacter(playerPick, red);
+            hasPickedBlack = IsCharacter(playerPick, black);
 		}
 		
-		aIsWinner = aIsCorrectPick;
+		isWinner = isCorrectPick;
 	}
-	else if (aPlayerDecision == aCasino.game.rouletteOddEven)
+	else if (playerDecision == aCasino.game.rouletteOddEven)
 	{
-		char aOdd = 'O';
-		char aEven = 'E';
+		char odd = 'O';
+		char even = 'E';
 		
-		bool aIsLandingEven = IsEven(aLanding);
+		bool isLandingEven = IsEven(landing);
 		
 		WriteLine("What's your guess? ('e' for even, 'o' for odd)");
 		
-		char aPlayerPick;
-		std::cin >> aPlayerPick;
+		char playerPick;
+		std::cin >> playerPick;
 		
-		bool aPlayerPickedOdd = IsCharacter(aPlayerPick, aOdd);
-		bool aPlayerPickedEven = IsCharacter(aPlayerPick, aEven);
+		bool hasPickedOdd = IsCharacter(playerPick, odd);
+		bool hasPickedEven = IsCharacter(playerPick, even);
 
-		while (!aPlayerPickedOdd && !aPlayerPickedEven)
+		while (!hasPickedOdd && !hasPickedEven)
 		{
 			WriteLine("Please make a valid pick!");
 			
 			while (std::cin.fail())
             {
                 ClearInput();
-                std::cin >> aPlayerPick;
+                std::cin >> playerPick;
             }
 
-            std::cin >> aPlayerPick;
+            std::cin >> playerPick;
 			
-			aPlayerPickedOdd = IsCharacter(aPlayerPick, aOdd);
-			aPlayerPickedEven = IsCharacter(aPlayerPick, aEven);
+			hasPickedOdd = IsCharacter(playerPick, odd);
+			hasPickedEven = IsCharacter(playerPick, even);
 		}
 		
-		aIsWinner = (aPlayerPickedOdd && !aIsLandingEven) || (aPlayerPickedEven && aIsLandingEven);
+		isWinner = (hasPickedOdd && !isLandingEven) || (hasPickedEven && isLandingEven);
 	}
 	else
 	{
-		int aCorrectRowIndex = GetRandomNumber(0, 3);
-		aCorrectRowArray = BuildRow(aCorrectRowIndex);
-		aCorrectRow = aCorrectRowIndex;
+		int correctRowIndex = GetRandomNumber(0, 3);
+		correctRowArray = BuildRow(correctRowIndex);
+		correctRow = correctRowIndex;
 		
-		aLandedCol = GetRandomNumber(aCasino.game.rouletteRowMin, aCasino.game.rouletteRowMax);
+		landedCol = GetRandomNumber(aCasino.game.rouletteRowMin, aCasino.game.rouletteRowMax);
 		
 		WriteLine("Which row are you picking? (0-3)");
 
-        int aPlayerRowPick;
-        std::cin >> aPlayerRowPick;
+        int pickedRow;
+        std::cin >> pickedRow;
 
 		while (std::cin.fail())
 		{
 			WriteLine("Please make a valid pick!");
 			ClearInput();
-			std::cin >> aPlayerRowPick;
+			std::cin >> pickedRow;
 		}
 
-		while (HasSubceeded(aPlayerRowPick, 0) || HasExceeded(aPlayerRowPick, aCasino.game.rouletteRowMax))
+		while (HasSubceeded(pickedRow, 0) || HasExceeded(pickedRow, aCasino.game.rouletteRowMax))
 		{
 			std::cout << "Please pick a valid row! (0 - " << aCasino.game.rouletteRowMax << ")\n";
-			std::cin >> aPlayerRowPick;
+			std::cin >> pickedRow;
 		}
 		
-		aIsWinner = aPlayerRowPick == aCorrectRowIndex;
+		isWinner = pickedRow == correctRowIndex;
 		
-		bool aHasNumbers = aPlayerDecision == aCasino.game.rouletteStraight || aPlayerDecision == aCasino.game.rouletteOddEven;
-		bool aHasRow = aPlayerDecision == aCasino.game.rouletteColumnRow;
+		bool hasNumbers = playerDecision == aCasino.game.rouletteStraight || playerDecision == aCasino.game.rouletteOddEven;
+		bool hasRow = playerDecision == aCasino.game.rouletteColumnRow;
 
-		if (aHasRow)
+		if (hasRow)
 		{
-			bool aIsAboveZero = aCorrectRow > 0;
+			bool isAboveZero = correctRow > 0;
 
-			std::cout << (aIsWinner ? "Congratulations! It landed on" : "Nice try! It landed on") << " " <<
-				aCorrectRow;
-			if (aIsAboveZero) std::cout << "(" << (aIsAboveZero ? aCorrectRowArray[aLandedCol] : 0) << ")" << '\n';
-			else std::cout << '\n';
+			std::cout << (isWinner ? "Congratulations! It landed on" : "Nice try! It landed on") << " " <<
+				correctRow;
+			if (isAboveZero) std::cout << "(" << (isAboveZero ? correctRowArray[landedCol] : 0) << ")" << '\n';
+			else
+			{
+				 std::cout << '\n';
+			}
 		}
-		else if (aHasNumbers)
+		else if (hasNumbers)
 		{
-			std::cout << (aIsWinner ? "Well done! The ball landed on" : "Nice try! The ball landed on") << " " <<
-				aLanding <<
+			std::cout << (isWinner ? "Well done! The ball landed on" : "Nice try! The ball landed on") << " " <<
+				landing <<
 				'\n';
 		}
 		else
 		{
-			std::cout << "It landed on a " << aCorrectPick << " rouge... so" << (aIsWinner
+			std::cout << "It landed on a " << correctPick << " rouge... so" << (isWinner
 				                                                                    ? " congratulations!"
 				                                                                    : " nice try! Better luck next time") << '\n';
 		}
 	}
 	
-	int aWinAmount = aLanding == 0 ? myBet * mySettings.alternativeRewardMultiplier : myBet * mySettings.rewardMultiplier;
-	BroadcastWinOrLoss(aCasino, aIsWinner, aWinAmount, myBet, aIsWinner ? myBase.winAmount : myBase.lossAmount);
+	int winAmount = landing == 0 ? myBet * mySettings.alternativeRewardMultiplier : myBet * mySettings.rewardMultiplier;
+	BroadcastWinOrLoss(aCasino, isWinner, winAmount, myBet, isWinner ? myBase.winAmount : myBase.lossAmount);
 }

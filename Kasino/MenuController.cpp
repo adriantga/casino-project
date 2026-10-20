@@ -9,42 +9,41 @@ namespace Menu
 {
     void EnterMainMenu(Casino& aCasino)
     {
-        int aInput;
-        DrawMenu(aCasino, aInput, "THE ULTIMATE CASINO", "[1] Play Game\n[2] About\n[3] Stats\n[4] Quit", 4);
-        Pick(aInput, false, aCasino);
+        int input;
+        DrawMenu(aCasino, input, "THE ULTIMATE CASINO", "[1] Play Game\n[2] About\n[3] Stats\n[4] Quit", 4);
+        Pick(input, false, aCasino);
     }
     
      void EnterGamePicker(Casino& aCasino)
     {
-        const int aOptions = static_cast<int>(aCasino.minigameTypes.size()) + 2;
+        const int OPTIONS = static_cast<int>(aCasino.minigameTypes.size()) + 2;
 
-        int aInput;
+        int input;
 
-        // Sooner or later I'll have to change this based on 
         DrawTitle("GAME PICKER");
 
-        int aMinigameCount = int(aCasino.minigameTypes.size());
+        int minigameCount = int(aCasino.minigameTypes.size());
 
-        for (int aI = 0; aI < aMinigameCount; aI++)
+        for (int i = 0; i < minigameCount; i++)
         {
-            EMinigameType aMinigameType = aCasino.minigameTypes[aI];
-            std::cout << "[" << (aI + 1) << "] " << FromMinigameToChar(aMinigameType) << '\n';
+            ETableType minigameType = aCasino.minigameTypes[i];
+            std::cout << "[" << (i + 1) << "] " << FromMinigameToChar(minigameType) << '\n';
         }
 
         DrawBreakerLine();
 
-        std::cout << "[" << (aMinigameCount + 1) << "] " << "Cash Out" << '\n';
-        std::cout << "[" << (aMinigameCount + 2) << "] " << "Back To Menu" << '\n';
+        std::cout << "[" << (minigameCount + 1) << "] " << "Cash Out" << '\n';
+        std::cout << "[" << (minigameCount + 2) << "] " << "Back To Menu" << '\n';
 
         DrawMenuLine();
 
         BroadcastPlayerBalance(false, aCasino);
 
-        ForceInput(aInput);
+        ForceInput(input);
 
-        aInput = Clamp(aInput, 1, aOptions);
+        input = Clamp(input, 1, OPTIONS);
 
-        Pick(aInput, true, aCasino);
+        Pick(input, true, aCasino);
     }
 
     void EnterNamePicker(Casino& aCasino)
@@ -55,58 +54,57 @@ namespace Menu
             return;
         }
 
-        char aConfirmName = 'Y';
-        char aDenyName = 'N';
+        char confirmName = 'Y';
+        char denyName = 'N';
 
         WriteLine("What's your name? (Must be between 2-16 characters)");
 
-        char aPlayerNameInput[17];
-        std::cin >> aPlayerNameInput;
+        char playerNameInput[17];
+        std::cin >> playerNameInput;
 
-        while (std::cin.fail() || !IsValidName(aPlayerNameInput))
+        while (std::cin.fail() || !IsValidName(playerNameInput))
         {
             WriteLine("Please enter letters only! / Ensure the name is between 2-16 characters.");
             ClearInput();
-            std::cin >> aPlayerNameInput;
+            std::cin >> playerNameInput;
         }
 
         ClearInput();
 
-        std::cout << "Your name is: " << aPlayerNameInput << ". Continue? (y to confirm, n to deny)" << '\n';
+        std::cout << "Your name is: " << playerNameInput << ". Continue? (y to confirm, n to deny)" << '\n';
 
-        char aConfirmInput;
-        std::cin >> aConfirmInput;
+        char confirmInput;
+        std::cin >> confirmInput;
         while (std::cin.fail())
         {
             ClearInput();
-            std::cin >> aConfirmInput;
+            std::cin >> confirmInput;
             WriteLine("Please confirm or deny!");
         }
 
-        bool aHasConfirmedName = IsCharacter(aConfirmInput, aConfirmName);
-        bool aHasDeniedName = IsCharacter(aConfirmInput, aDenyName);
+        bool hasConfirmedName = IsCharacter(confirmInput, confirmName);
+        bool hasDeniedName = IsCharacter(confirmInput, denyName);
 
-        if (!aHasConfirmedName && !aHasDeniedName)
+        if (!hasConfirmedName && !hasDeniedName)
         {
-            std::cin >> aConfirmInput;
+            std::cin >> confirmInput;
 
-            aHasConfirmedName = IsCharacter(aConfirmInput, aConfirmName);
-            aHasDeniedName = IsCharacter(aConfirmInput, aDenyName);
+            hasConfirmedName = IsCharacter(confirmInput, confirmName);
+            hasDeniedName = IsCharacter(confirmInput, denyName);
         }
 
-        if (aHasConfirmedName)
+        if (hasConfirmedName)
         {
             aCasino.player.hasEnteredName = true;
-            aCasino.player.name = aPlayerNameInput;
+            aCasino.player.name = playerNameInput;
 
             ClearConsole();
             EnterGamePicker(aCasino);
         }
-        else if (aHasDeniedName)
+        else if (hasDeniedName)
         {
             ClearConsole();
             EnterNamePicker(aCasino);
         }
     }
-   
 }

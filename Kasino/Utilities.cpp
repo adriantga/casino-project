@@ -4,7 +4,6 @@
 #include "Utilities.h"
 
 #include "Kasino.h"
-#include "StateController.h"
 #include "Stats.h"
 
 constexpr int GLOBAL_LOWER_CASE_OFFSET = 32;
@@ -19,19 +18,19 @@ int GetRandomNumber(int aMin, int aMax)
     return aGenerator(distributor);
 }
 
-const char* FromMinigameToChar(EMinigameType& aMinigame)
+const char* FromMinigameToChar(ETableType& aTable)
 {
-    switch (aMinigame)
+    switch (aTable)
     {
-    case EMinigameType::GuessTheDiceSum:
+    case ETableType::GuessTheDiceSum:
         return "Guess The Dice Sum";
-    case EMinigameType::OddOrEven:
+    case ETableType::OddOrEven:
         return "Odd or Even";
-    case EMinigameType::YesOrNo:
+    case ETableType::YesOrNo:
         return "Yes or No";
-    case EMinigameType::HigherOrLower:
+    case ETableType::HigherOrLower:
         return "Higher or Lower";
-    case EMinigameType::Roulette:
+    case ETableType::Roulette:
         return "Roulette";
     }
 
@@ -72,58 +71,58 @@ void GetBetLimits(Casino& aCasino, int aGameIndex, int& aMinBet, int& aMaxBet, b
 
 int GetBetAmount(Casino& aCasino, int aGameIndex, bool& aIsPlayingHighStakes)
 {
-    int aMinAllowedBet = 0;
-    int aMaxAllowedBet = 0;
-    bool aHasStakes = false;
-    GetBetLimits(aCasino, aGameIndex, aMinAllowedBet, aMaxAllowedBet, aHasStakes);
+    int minAllowedBet = 0;
+    int maxAllowedBet = 0;
+    bool hasStakes = false;
+    GetBetLimits(aCasino, aGameIndex, minAllowedBet, maxAllowedBet, hasStakes);
     
-    int aPlayerMoney = aCasino.player.money;
-    bool aCanPlay = !HasSubceeded(aPlayerMoney, aMinAllowedBet);
+    int playerMoney = aCasino.player.money;
+    bool canPlay = !HasSubceeded(playerMoney, minAllowedBet);
     
     BroadcastPlayerBalance(false, aCasino);
     
-    if (!aCanPlay && aIsPlayingHighStakes && aHasStakes)
+    if (!canPlay && aIsPlayingHighStakes && hasStakes)
     {
         ClearConsole();
         WriteLine("As you try to pull out money from your wallet, you notice that your wallet is emptier than you thought.");
         WriteLine("'You are low on funds. Come back when you have more', the security guard says.");
         Pause();
         aCasino.EnterGameMenu(aGameIndex);
-        return aMinAllowedBet;
+        return minAllowedBet;
     }
     
     WriteLine("How much are you betting?");
 
-    int aResult;
-    std::cin >> aResult;
+    int result;
+    std::cin >> result;
 
     while (std::cin.fail())
     {
         std::cout << "Please pick a valid number!" << '\n';
         ClearInput();
-        std::cin >> aResult;
+        std::cin >> result;
     }
     
-    bool aIsBetBiggerThanBank = HasExceeded(aResult, aPlayerMoney);
-    while (aIsBetBiggerThanBank || aResult < aMinAllowedBet || aResult > aMaxAllowedBet)
+    bool isBetLargerThanBank = HasExceeded(result, playerMoney);
+    while (isBetLargerThanBank || result < minAllowedBet || result > maxAllowedBet)
     {
-        if (aIsBetBiggerThanBank)
+        if (isBetLargerThanBank)
         {
             std::cout << "You don't have the money you're betting!" << '\n';
         }
         else
         {
-            std::cout << "Invalid bet($" << aMinAllowedBet << "-" << aMaxAllowedBet <<
+            std::cout << "Invalid bet($" << minAllowedBet << "-" << maxAllowedBet <<
                 ")\n";    
             ClearInput();
         }
         
-        std::cin >> aResult;
-        aIsBetBiggerThanBank = HasExceeded(aResult, aPlayerMoney);
+        std::cin >> result;
+        isBetLargerThanBank = HasExceeded(result, playerMoney);
     }
 
     ClearInput();
-    return aResult;
+    return result;
 }
 
 void DrawMenu(Casino& aCasino, int& aInput, const char aTitleText[], const char aOptions[], int aNumOptions,
@@ -305,17 +304,17 @@ void BroadcastWinOrLoss(Casino& aCasino, bool aIsWinner, int aWinAmount, int aLo
 
 std::array<int, 12> BuildRow(int aRowStart)
 {
-    std::array<int, 12> aResult;
+    std::array<int, 12> result;
 
-    int aNum = aRowStart;
+    int num = aRowStart;
 
-    for (int aI = 0; aI < aResult.size(); aI++)
+    for (int i = 0; i < result.size(); i++)
     {
-        aResult[aI] = aNum;
-        aNum += 3;
+        result[i] = num;
+        num += 3;
     }
 
-    return aResult;
+    return result;
 }
 
 bool IsMatching(int aCurrent[], int aTarget[])

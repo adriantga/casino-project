@@ -63,7 +63,7 @@ void HigherOrLower::EnterGameMenu(Casino& aCasino)
 {
     ClearConsole();
     
-    int aInput;
+    int input;
     DrawBreakerLine();
     WriteLine("Welcome to Higher or Lower!");
     DrawBreakerLine();
@@ -73,24 +73,24 @@ void HigherOrLower::EnterGameMenu(Casino& aCasino)
     BroadcastPlayerBalance(false, aCasino);
     DrawBreakerLine();
     
-    ForceInput(aInput);
+    ForceInput(input);
     ClearConsole();
 
-    constexpr int aPlayGame = 1;
-    constexpr int aShowInstructions = 2;
-    constexpr int aLeaveTable = 3;
+    constexpr int PLAY_TABLE = 1;
+    constexpr int SHOW_INSTRUCTIONS = 2;
+    constexpr int LEAVE_TABLE = 3;
     
-    aInput = Max(aInput, aLeaveTable);
+    input = Max(input, LEAVE_TABLE);
 
-    switch (aInput)
+    switch (input)
     {
-    case aPlayGame:
+    case PLAY_TABLE:
         PlayTable(aCasino);
         break;
-    case aShowInstructions:
+    case SHOW_INSTRUCTIONS:
         ShowRules(aCasino);
         break;
-    case aLeaveTable:
+    case LEAVE_TABLE:
         Menu::EnterGamePicker(aCasino);
         break;
     }
@@ -111,11 +111,11 @@ void HigherOrLower::PlayTable(Casino& aCasino)
     mySettings.firstChoice = 'H';
     mySettings.secondChoice = 'L';
 
-    char aPlayerHighLowInput;
-    std::cin >> aPlayerHighLowInput;
+    char playerPick;
+    std::cin >> playerPick;
 
-    mySettings.hasPlayerPickedFirst = IsCharacter(aPlayerHighLowInput, mySettings.firstChoice);
-    mySettings.hasPlayerPickedSecond = IsCharacter(aPlayerHighLowInput, mySettings.secondChoice);
+    mySettings.hasPlayerPickedFirst = IsCharacter(playerPick, mySettings.firstChoice);
+    mySettings.hasPlayerPickedSecond = IsCharacter(playerPick, mySettings.secondChoice);
 
     myBettingSettings.maxAllowedBet = aCasino.player.money;
         
@@ -127,13 +127,13 @@ void HigherOrLower::PlayTable(Casino& aCasino)
         while (std::cin.fail())
         {
             ClearInput();
-            std::cin >> aPlayerHighLowInput;
+            std::cin >> playerPick;
         }
 
-        std::cin >> aPlayerHighLowInput;
+        std::cin >> playerPick;
 
-        mySettings.hasPlayerPickedFirst = IsCharacter(aPlayerHighLowInput, mySettings.firstChoice);
-        mySettings.hasPlayerPickedSecond = IsCharacter(aPlayerHighLowInput, mySettings.secondChoice);
+        mySettings.hasPlayerPickedFirst = IsCharacter(playerPick, mySettings.firstChoice);
+        mySettings.hasPlayerPickedSecond = IsCharacter(playerPick, mySettings.secondChoice);
         mySettings.isPlayingHighStakes = mySettings.hasPlayerPickedFirst;
     }
 
@@ -163,81 +163,81 @@ void HigherOrLower::PlayTable(Casino& aCasino)
 
 void HigherOrLower::OnPlay(Casino& aCasino)
 {
-    int aPickedNumber = GetRoll();
-    int aNextPickedNumber = GetRoll();
+    int pickedNumber = GetRoll();
+    int nextPickedNumber = GetRoll();
 
-    while (aPickedNumber == aNextPickedNumber)
+    while (pickedNumber == nextPickedNumber)
     {
-        aPickedNumber = GetRoll();
+        pickedNumber = GetRoll();
     }
     
-    bool aIsHigher = aPickedNumber > aNextPickedNumber;
+    bool isHigher = pickedNumber > nextPickedNumber;
     
-    char aHigher = 'H';
-    char aLower = 'L';
-    char aQuit = 'Q';
+    char higher = 'H';
+    char lower = 'L';
+    char quit = 'Q';
     
-    std::cout << "Do you think " << aPickedNumber << " is higher or lower than the next one?\n";
+    std::cout << "Do you think " << pickedNumber << " is higher or lower than the next one?\n";
     
-    char aPlayerPick;
-    std::cin >> aPlayerPick;
+    char playerGuess;
+    std::cin >> playerGuess;
     
-    bool aPlayerPickedHigher = IsCharacter(aPlayerPick, aHigher);
-    bool aPlayerPickedLower = IsCharacter(aPlayerPick, aLower);
-    bool aPlayerIsQuitting = IsCharacter(aPlayerPick, aQuit);
+    bool hasPickedHigher = IsCharacter(playerGuess, higher);
+    bool hasPickedLower = IsCharacter(playerGuess, lower);
+    bool hasQuit = IsCharacter(playerGuess, quit);
     
     mySettings.cachedReward = 0;
-    int aWinAmount = 0;
+    int winAmount = 0;
 
-    while (!aPlayerIsQuitting)
+    while (!hasQuit)
     {
         while (std::cin.fail())
         {
             ClearInput();
-            std::cin >> aPlayerPick;
+            std::cin >> playerGuess;
         }
         
-        if (aPlayerPickedHigher || aPlayerPickedLower)
+        if (hasPickedHigher || hasPickedLower)
         {
-            bool aIsCorrectPick = aPlayerPickedHigher && aIsHigher || aPlayerPickedLower && !aIsHigher;
-            if (aIsCorrectPick)
+            bool isCorrectPick = hasPickedHigher && isHigher || hasPickedLower && !isHigher;
+            if (isCorrectPick)
             {
-                std::cout << "That's correct! " << aPickedNumber << " is " << (aIsHigher ? "higher" : "lower") << " than " << aNextPickedNumber << "!" << "\n";
+                std::cout << "That's correct! " << pickedNumber << " is " << (isHigher ? "higher" : "lower") << " than " << nextPickedNumber << "!" << "\n";
                 mySettings.cachedReward += mySettings.baseReward;
                 
-                int aTemp = aNextPickedNumber;
-                aPickedNumber = aTemp;
-                aNextPickedNumber = GetRoll();
+                int aTemp = nextPickedNumber;
+                pickedNumber = aTemp;
+                nextPickedNumber = GetRoll();
 
-                while (aPickedNumber == aNextPickedNumber)
+                while (pickedNumber == nextPickedNumber)
                 {
-                    aPickedNumber = GetRoll();
+                    pickedNumber = GetRoll();
                 }
                 
-                aIsHigher = aPickedNumber > aNextPickedNumber;
-                std::cout << "Do you think " << aPickedNumber << " is higher or lower than the next number?" << '\n';
+                isHigher = pickedNumber > nextPickedNumber;
+                std::cout << "Do you think " << pickedNumber << " is higher or lower than the next number?" << '\n';
             }
             else
             {
-                std::cout << "The number after " << aPickedNumber << " was " << aNextPickedNumber << "!\n";
+                std::cout << "The number after " << pickedNumber << " was " << nextPickedNumber << "!\n";
                 WriteLine("Better luck next time!");
                 mySettings.cachedReward = 0;
                 break;
             }
         }
         
-        std::cin >> aPlayerPick;
-        aPlayerPickedHigher = IsCharacter(aPlayerPick, aHigher);
-        aPlayerPickedLower = IsCharacter(aPlayerPick, aLower);
-        aPlayerIsQuitting = IsCharacter(aPlayerPick, aQuit);
+        std::cin >> playerGuess;
+        hasPickedHigher = IsCharacter(playerGuess, higher);
+        hasPickedLower = IsCharacter(playerGuess, lower);
+        hasQuit = IsCharacter(playerGuess, quit);
     }
     
     if (mySettings.cachedReward > 0)
     {
-        aWinAmount = mySettings.baseReward + myBet * (mySettings.cachedReward);
+        winAmount = mySettings.baseReward + myBet * (mySettings.cachedReward);
     }
     
-    bool aIsWinner = aWinAmount > 0 && aPlayerIsQuitting;
-    BroadcastWinOrLoss(aCasino, aIsWinner, aWinAmount, myBet,
-                       aIsWinner ? myBase.winAmount : myBase.lossAmount);
+    bool isWinner = winAmount > 0 && hasQuit;
+    BroadcastWinOrLoss(aCasino, isWinner, winAmount, myBet,
+                       isWinner ? myBase.winAmount : myBase.lossAmount);
 }

@@ -37,13 +37,11 @@ void GetMinigameStats(const Casino& aCasino, int aIndex, int& aWinAmount, int& a
 void AddPlayedGame(Casino& aCasino, bool aIsWinner)
 {
     aCasino.playerStats.gamesPlayed++;
-
-    // This is a bit of a hack. It shifts the array to the right, and adds the new result to the front.
-    // Certainly not the best way to do this but it is readable.
-    int aHistorySize = sizeof(aCasino.playerStats.games) / sizeof(aCasino.playerStats.games[0]);
-    for (int aI = aHistorySize - 1; aI > 0; aI--)
+    
+    int historySize = sizeof(aCasino.playerStats.games) / sizeof(aCasino.playerStats.games[0]);
+    for (int i = historySize - 1; i > 0; i--)
     {
-        aCasino.playerStats.games[aI] = aCasino.playerStats.games[aI - 1];
+        aCasino.playerStats.games[i] = aCasino.playerStats.games[i - 1];
     }
 
     SetResult(aCasino, 0, aIsWinner);
@@ -60,8 +58,8 @@ void SetResult(Casino& aCasino, int aMatchIndex, bool aIsWin)
         aCasino.playerStats.losses++;
     }
 
-    int aResultIndex = aIsWin ? aCasino.playerStats.winIndex : aCasino.playerStats.lossIndex;
-    aCasino.playerStats.games[aMatchIndex] = aCasino.playerStats.gameOutcomes[aResultIndex];
+    int resultIndex = aIsWin ? aCasino.playerStats.winIndex : aCasino.playerStats.lossIndex;
+    aCasino.playerStats.games[aMatchIndex] = aCasino.playerStats.gameOutcomes[resultIndex];
 }
 
 void ResetStats(Casino& aCasino)
@@ -76,7 +74,7 @@ void ShowStats(Casino& aCasino)
 {
     ClearConsole();
 
-    int aResultCount = 0;
+    int resultCount = 0;
 
     std::cout << "================== PLAYER STATS ==================" << '\n';
     std::cout << "Games Played: " << aCasino.playerStats.gamesPlayed << '\n';
@@ -84,19 +82,19 @@ void ShowStats(Casino& aCasino)
     std::cout << "Losses: " << aCasino.playerStats.losses << '\n';
     std::cout << "================= GAME OUTCOMES ==================" << '\n';
 
-    for (int aI = 0; aI < Constants::minigameCount; aI++)
+    for (int i = 0; i < Constants::tableCount; i++)
     {
-        EMinigameType aMinigameType = aCasino.minigameTypes[aI];
-        const char* aMinigameName = FromMinigameToChar(aMinigameType);
+        ETableType tableType = aCasino.minigameTypes[i];
+        const char* tableName = FromMinigameToChar(tableType);
         int aWinAmount = 0;
         int aLossAmount = 0;
-        GetMinigameStats(aCasino, aI, aWinAmount, aLossAmount);
+        GetMinigameStats(aCasino, i, aWinAmount, aLossAmount);
 
-        std::cout << aMinigameName << " Profit: " << aWinAmount << '\n';
-        std::cout << aMinigameName << " Loss: " << aLossAmount << '\n';
+        std::cout << tableName << " Profit: " << aWinAmount << '\n';
+        std::cout << tableName << " Loss: " << aLossAmount << '\n';
 
         // The last line-breaker is unnecessary
-        if (aI != Constants::minigameCount - 1) DrawBreakerLine();
+        if (i != Constants::tableCount - 1) DrawBreakerLine();
     }
 
     std::cout << "================== GAME HISTORY ==================" << '\n';
@@ -105,7 +103,7 @@ void ShowStats(Casino& aCasino)
     {
         if (IsCharacter(aMatch, '-'))
         {
-            aResultCount++;
+            resultCount++;
         }
 
         std::cout << aMatch << " ";
